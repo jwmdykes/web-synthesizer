@@ -20,6 +20,7 @@ function App() {
 
     oscillator.connect(audioContext.current.destination);
     oscillator.start()
+    oscillator.stop(audioContext.current.currentTime + 0.5);
   }
 
   return (
