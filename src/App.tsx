@@ -3,19 +3,11 @@ import React from 'react';
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <nav className="navbar bg-base-100">
+        <div className="navbar-start">
+          <a href="/" className='btn btn-ghost normal-case text-xl'>Synthesizer</a>
+        </div>
+      </nav>
     </div>
   );
 }
