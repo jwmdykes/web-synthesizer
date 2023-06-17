@@ -17,6 +17,7 @@ function App() {
   });
   const [oscillatorType, setOscillatorType] = useState<OscillatorTypes>('sine');
 
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [oscillator, setOscillator] = useState<OscillatorNode | null>(null);
   const [adsrGainNode, setAdsrGainNode] = useState<GainNode | null>(null);
 
@@ -110,9 +111,12 @@ function App() {
       </nav>
 
       <main className='flex flex-col gap-5'>
-        <div className='m-auto'>
-          <button className='btn btn-primary' onMouseDown={startEnvelope} onMouseUp={endEnvelope}>
+        <div className='flex flex-row gap-3 justify-center'>
+          <button className='btn btn-primary' onClick={startEnvelope}>
             Play Sound!
+          </button>
+          <button className='btn btn-primary' onClick={endEnvelope}>
+            Stop Sound!
           </button>
         </div>
         <div className='m-auto flex flex-col gap-2'>
