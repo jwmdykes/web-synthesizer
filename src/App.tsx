@@ -1,10 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import {
   EnvelopeParams,
   createADSRNode,
   createOscillator,
   OscillatorTypes,
 } from './Oscillator';
+
+interface MIDIMessageEvent extends Event {
+  data: Uint8Array;
+}
 
 function App() {
   const audioContext = useRef<AudioContext | null>(null);
@@ -21,10 +25,6 @@ function App() {
   const [oscillator, setOscillator] = useState<OscillatorNode | null>(null);
   const [adsrGainNode, setAdsrGainNode] = useState<GainNode | null>(null);
 
-  useEffect(() => {
-    const AudioContext = window.AudioContext;
-    audioContext.current = new AudioContext();
-  }, []);
 
   const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVolume(Number(event.target.value));
@@ -64,7 +64,7 @@ function App() {
     setOscillatorType(event.target.value as OscillatorTypes);
   };
 
-  const startEnvelope = () => {
+  const startEnvelope = useCallback(() => {
     if (audioContext.current === null) {
       return;
     }
@@ -82,10 +82,10 @@ function App() {
     setOscillator(newOscillator);
     setAdsrGainNode(newAdsrGainNode);
     setIsPlaying(true);
-  };
+  }, [audioContext, oscillatorType, envelopeParams, volume]);
 
   // Function to end the envelope
-  const endEnvelope = () => {
+  const endEnvelope = useCallback(() => {
     if (!adsrGainNode || !audioContext.current || adsrGainNode.gain.value <= 0) {
       return;
     }
@@ -100,7 +100,49 @@ function App() {
       oscillator?.disconnect();
       adsrGainNode.disconnect();
     }, envelopeParams.release * 1000); // setTimeout uses milliseconds
-  };
+  }, [adsrGainNode, audioContext, envelopeParams.release, oscillator]);
+
+  useEffect(() => {
+    const AudioContext = window.AudioContext;
+    audioContext.current = new AudioContext();
+
+  }, []);
+
+  // Function to handle incoming MIDI messages
+  const handleMIDIMessage = useCallback((event: Event) => {
+    const message = event as MIDIMessageEvent;
+    const [status, note, velocity] = message.data;
+
+    // MIDI "note on" message
+    if (status === 144) {
+      startEnvelope();
+    }
+
+    // MIDI "note off" message
+    else if (status === 128) {
+      endEnvelope();
+    }
+  }, [startEnvelope, endEnvelope]);
+
+  // Function to initialize the MIDI API
+  const initializeMIDI = useCallback(async () => {
+    if (!navigator.requestMIDIAccess) {
+      console.log("WebMIDI is not supported in this browser.");
+      return;
+    }
+
+    const midiAccess: WebMidi.MIDIAccess = await navigator.requestMIDIAccess();
+
+    // Listen for MIDI messages on all inputs
+    for (let input of midiAccess.inputs.values()) {
+      input.onmidimessage = handleMIDIMessage;
+    }
+  }, [handleMIDIMessage]);
+
+  // Call the initializeMIDI function when the component mounts
+  useEffect(() => {
+    initializeMIDI();
+  }, [initializeMIDI]);
 
   return (
     <div className='App h-full'>
