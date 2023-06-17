@@ -17,6 +17,9 @@ function App() {
   });
   const [oscillatorType, setOscillatorType] = useState<OscillatorTypes>('sine');
 
+  const [oscillator, setOscillator] = useState<OscillatorNode | null>(null);
+  const [adsrGainNode, setAdsrGainNode] = useState<GainNode | null>(null);
+
   useEffect(() => {
     const AudioContext = window.AudioContext;
     audioContext.current = new AudioContext();
@@ -60,23 +63,40 @@ function App() {
     setOscillatorType(event.target.value as OscillatorTypes);
   };
 
-  const playSound = () => {
+  const startEnvelope = () => {
     if (audioContext.current === null) {
       return;
     }
 
-    const oscillator = createOscillator(audioContext.current, oscillatorType);
-    const envelope = createADSRNode(audioContext.current, envelopeParams);
-
+    const newOscillator = createOscillator(audioContext.current, oscillatorType);
+    const newAdsrGainNode = createADSRNode(audioContext.current, envelopeParams);
     const globalVolume = audioContext.current.createGain();
     globalVolume.gain.value = volume / 100; // Set the global volume
 
-    oscillator.connect(envelope);
-    envelope.connect(globalVolume);
     globalVolume.connect(audioContext.current.destination);
+    newAdsrGainNode.connect(globalVolume);
+    newOscillator.connect(newAdsrGainNode);
+    newOscillator.start();
 
-    oscillator.start();
-    // oscillator.stop(audioContext.current.currentTime + 0.5);
+    setOscillator(newOscillator);
+    setAdsrGainNode(newAdsrGainNode);
+  };
+
+  // Function to end the envelope
+  const endEnvelope = () => {
+    if (!adsrGainNode || !audioContext.current || adsrGainNode.gain.value <= 0) {
+      return;
+    }
+
+    adsrGainNode.gain.setValueAtTime(adsrGainNode.gain.value, audioContext.current.currentTime); // Set the current gain immediately
+    adsrGainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.current.currentTime + envelopeParams.release); // Exponential release phase
+
+    // Optionally, stop and disconnect the oscillator after the release phase is done
+    setTimeout(() => {
+      oscillator?.stop();
+      oscillator?.disconnect();
+      adsrGainNode.disconnect();
+    }, envelopeParams.release * 1000); // setTimeout uses milliseconds
   };
 
   return (
@@ -91,7 +111,7 @@ function App() {
 
       <main className='flex flex-col gap-5'>
         <div className='m-auto'>
-          <button className='btn btn-primary' onClick={playSound}>
+          <button className='btn btn-primary' onMouseDown={startEnvelope} onMouseUp={endEnvelope}>
             Play Sound!
           </button>
         </div>
@@ -106,7 +126,7 @@ function App() {
             <option value='square'>square</option>
             <option value='triangle'>triangle</option>
           </select>
-          <h2 className='text-xl'>Gain</h2>
+          <h2 className='text-xl'>Gain: {volume}</h2>
           <input
             type='range'
             min={0}
@@ -116,17 +136,17 @@ function App() {
             onChange={handleVolumeChange}
           />
           <h2 className='text-xl'>Amplitude Envelope</h2>
-          <h3>Attack</h3>
+          <h3>Attack: {envelopeParams.attack}</h3>
           <input
             type='range'
-            min={0}
+            min={0.01}
             max='1'
             step='0.01'
             value={envelopeParams.attack}
             className='range'
             onChange={handleAttackChange}
           />
-          <h3>Decay</h3>
+          <h3>Decay: {envelopeParams.decay}</h3>
           <input
             type='range'
             min={0}
@@ -136,21 +156,21 @@ function App() {
             className='range'
             onChange={handleDecayChange}
           />
-          <h3>Sustain</h3>
+          <h3>Sustain: {envelopeParams.sustain}</h3>
           <input
             type='range'
-            min={0}
+            min={0.01}
             max='1'
             step='0.01'
             value={envelopeParams.sustain}
             className='range'
             onChange={handleSustainChange}
           />
-          <h3>Release</h3>
+          <h3>Release: {envelopeParams.release}</h3>
           <input
             type='range'
-            min={0}
-            max='1'
+            min={0.01}
+            max='3'
             step='0.01'
             value={envelopeParams.release}
             className='range'
