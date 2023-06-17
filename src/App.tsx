@@ -81,6 +81,7 @@ function App() {
 
     setOscillator(newOscillator);
     setAdsrGainNode(newAdsrGainNode);
+    setIsPlaying(true);
   };
 
   // Function to end the envelope
@@ -91,6 +92,7 @@ function App() {
 
     adsrGainNode.gain.setValueAtTime(adsrGainNode.gain.value, audioContext.current.currentTime); // Set the current gain immediately
     adsrGainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.current.currentTime + envelopeParams.release); // Exponential release phase
+    setIsPlaying(false);
 
     // Optionally, stop and disconnect the oscillator after the release phase is done
     setTimeout(() => {
@@ -112,7 +114,7 @@ function App() {
 
       <main className='flex flex-col gap-5'>
         <div className='flex flex-row gap-3 justify-center'>
-          <button className='btn btn-primary' onClick={startEnvelope}>
+          <button className={`btn ${isPlaying ? 'btn-disabled' : 'btn-primary'}`} onClick={startEnvelope}>
             Play Sound!
           </button>
           <button className='btn btn-primary' onClick={endEnvelope}>
