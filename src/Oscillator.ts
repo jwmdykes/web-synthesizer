@@ -1,3 +1,5 @@
+import { midiNoteToFrequency } from "./Tunings";
+
 export type EnvelopeParams = {
   attack: number;
   decay: number;
@@ -22,9 +24,9 @@ export const createADSRNode = (audioContext: AudioContext, { attack, decay, sust
   return gainNode;
 }
 
-export const createOscillator = (audioContext: AudioContext, type: OscillatorTypes) => {
+export const createOscillator = (audioContext: AudioContext, type: OscillatorTypes, noteNumber: number) => {
   const oscillator = new OscillatorNode(audioContext, {
-    frequency: 440,
+    frequency: midiNoteToFrequency(noteNumber),
     type: type
   })
   return oscillator
