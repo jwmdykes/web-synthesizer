@@ -62,7 +62,7 @@ function App() {
     setOscillatorType(event.target.value as OscillatorTypes);
   };
 
-  const startEnvelope = useCallback((noteNumber: number) => {
+  const startEnvelope = useCallback((noteNumber: number, velocity: number) => {
     if (audioContext.current === null) {
       return;
     }
@@ -70,7 +70,11 @@ function App() {
     const newOscillator = createOscillator(audioContext.current, oscillatorType, noteNumber);
     const newAdsrGainNode = createADSRNode(audioContext.current, envelopeParams);
     const globalVolume = audioContext.current.createGain();
-    globalVolume.gain.value = volume / 100; // Set the global volume
+
+    const scaledVelocity = Math.pow(velocity, 1.5);
+    // const scaledVelocity = Math.log(1 + velocity / 127);
+
+    globalVolume.gain.value = (volume / 100) * scaledVelocity; // Set the global volume
 
     globalVolume.connect(audioContext.current.destination);
     newAdsrGainNode.connect(globalVolume);
@@ -127,7 +131,7 @@ function App() {
 
     // MIDI "note on" message
     if (status === 144) {
-      startEnvelope(note);
+      startEnvelope(note, velocity / 127);
     }
 
     // MIDI "note off" message
@@ -191,7 +195,7 @@ function App() {
         <div className='flex flex-row gap-3 justify-center'>
           <button
             className={`btn ${activeNotes.size > 0 ? 'btn-disabled' : 'btn-primary'}`}
-            onClick={() => startEnvelope(60)}  // Assuming you want to play note 60 when the button is clicked
+            onClick={() => startEnvelope(60, 0.7)}  // Assuming you want to play note 60 when the button is clicked
           >
             Play Sound!
           </button>
