@@ -275,7 +275,7 @@ function App() {
             onChange={handleReleaseChange}
           /> */}
           <h1 className='text-4xl'>Testing Knobs!</h1>
-          <Knob maxVal={1} minVal={0.01} defaultVal={0.05}></Knob>
+          <Knob maxVal={100} minVal={0} defaultVal={25} sensitivity={0.75}></Knob>
         </div>
       </main>
     </div>

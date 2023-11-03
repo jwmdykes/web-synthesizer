@@ -1,85 +1,139 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, MouseEventHandler } from 'react';
 import { ReactComponent as DialBackground } from './svg1.svg';
 import { ReactComponent as DialForeground } from './svg2.svg';
-import { start } from 'repl';
 
-// Helper function to calculate rotation based on mouse movement
-function calculateRotation(e: any) {
-  // Implement logic to calculate rotation based on mouse position
-  // This would typically involve finding the angle between the center of the knob
-  // and the cursor position, then mapping that angle to a value
-  return 0; // placeholder
-}
+  // Convert a value to a rotation degree between minRotationDeg and maxRotationDeg
+  const convertValueToRotation = (
+    value: number,
+    minVal: number,
+    maxVal: number,
+    minRotationDeg: number,
+    maxRotationDeg: number
+  ): number => {
+    // First, clamp the value within the allowed range
+    const clampedValue = Math.min(Math.max(value, minVal), maxVal);
 
-// Helper function to convert the calculated rotation to a value
-function convertRotationToValue(
-  rotation: number,
-  minVal: number,
-  maxVal: number
-) {
-  // Map the rotation angle to a value within your range (minVal to maxVal)
-  return minVal; // placeholder
-}
+    // Calculate the total range of possible values
+    const valueRange = maxVal - minVal;
+
+    // Calculate how far along that range the current value is, as a percentage
+    const valuePercentage = (clampedValue - minVal) / valueRange;
+
+    // Now calculate the rotation range
+    const rotationRange = maxRotationDeg - minRotationDeg;
+
+    // Apply the percentage to the rotation range
+    const rotation = valuePercentage * rotationRange + minRotationDeg;
+
+    return rotation;
+  };
+
+  // Convert the rotation to a value between minVal and maxVal
+  const convertRotationToValue = (
+    rotation: number,
+    minVal: number,
+    maxVal: number,
+    minRotationDeg: number,
+    maxRotationDeg: number
+  ) => {
+    // First, clamp the rotation within the allowed range
+    const clampedRotation = Math.min(
+      Math.max(rotation, minRotationDeg),
+      maxRotationDeg
+    );
+
+    // Calculate the total range of rotation
+    const rotationRange = maxRotationDeg - minRotationDeg;
+
+    // Calculate how far along that range the current rotation is, as a percentage
+    const rotationPercentage =
+      (clampedRotation - minRotationDeg) / rotationRange;
+
+    // Now calculate the value range
+    const valueRange = maxVal - minVal;
+
+    // Apply the percentage to the value range
+    const value = rotationPercentage * valueRange + minVal;
+
+    return Math.round(value);
+  };
 
 // Define a type for the component's props
 type KnobProps = {
   maxVal: number;
   minVal: number;
   defaultVal: number;
+  sensitivity: number;
 };
 
-const Knob: React.FC<KnobProps> = ({ maxVal, minVal, defaultVal }) => {
+const Knob: React.FC<KnobProps> = ({ maxVal, minVal, defaultVal, sensitivity }) => {
+  const minRotationDeg = -130;
+  const maxRotationDeg = 40;
   const [currVal, setCurrVal] = useState(defaultVal);
-  const [rotation, setRotation] = useState(300);
+  const [rotation, setRotation] = useState(convertValueToRotation(defaultVal, minVal, maxVal, minRotationDeg, maxRotationDeg)); // Initial rotation
   const [isDragging, setIsDragging] = useState(false);
+  const [startY, setStartY] = useState(0); // Starting Y position for the drag
+  const [startRotation, setStartRotation] = useState(0); // Starting rotation at the beginning of the drag
 
-  const startDrag = useCallback((e: any) => {
-    // Prevent default interaction
-    e.preventDefault();
-    setIsDragging(true);
-    // You may want to add more code here to set the initial state for dragging
-  }, []);
+  const startDrag: MouseEventHandler<HTMLDivElement> = useCallback(
+    (e) => {
+      e.preventDefault();
+      setIsDragging(true);
+      setStartY(e.clientY); // Set the start Y position
+      setStartRotation(rotation); // Set the start rotation
+    },
+    [rotation]
+  );
 
   const onDrag = useCallback(
-    (e: any) => {
+    (e: MouseEvent) => {
       if (isDragging) {
-        // Calculate the rotation here and update currVal accordingly
-        // This is a placeholder for the actual logic you will need
-        const rotation = calculateRotation(e);
-        const newVal = convertRotationToValue(rotation, minVal, maxVal);
-        setCurrVal(newVal);
+        const deltaY = (startY - e.clientY) * sensitivity; // Calculate the change in Y
+
+        const newRotation = Math.max(
+          Math.min(startRotation + deltaY, maxRotationDeg),
+          minRotationDeg
+        ); // Calculate the new rotation, clamp between 0 and 360
+        setRotation(newRotation); // Set the new rotation
+        const newVal = convertRotationToValue(
+          newRotation,
+          minVal,
+          maxVal,
+          minRotationDeg,
+          maxRotationDeg
+        ); // Convert rotation to value
+        setCurrVal(newVal); // Set the new value
       }
     },
-    [isDragging, minVal, maxVal]
+    [isDragging, startY, startRotation, minVal, maxVal, sensitivity]
   );
 
   const endDrag = useCallback(() => {
     setIsDragging(false);
   }, []);
 
+
+
   // Add event listeners when dragging starts and remove them when it ends
   useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => onDrag(e);
+    const handleMouseUp = () => endDrag();
+
     if (isDragging) {
-      window.addEventListener('mousemove', onDrag);
-      window.addEventListener('mouseup', endDrag);
+      window.addEventListener('mousemove', handleMouseMove);
+      window.addEventListener('mouseup', handleMouseUp);
     }
 
     return () => {
-      window.removeEventListener('mousemove', onDrag);
-      window.removeEventListener('mouseup', endDrag);
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isDragging, onDrag, endDrag]);
 
   return (
     <div className='flex flex-col items-start'>
       <div className='flex flex-col items-center'>
-        <span className='mb-2'>{currVal}</span>
-        <div
-          className='relative w-16 h-16'
-          onMouseDown={startDrag}
-          onMouseUp={endDrag}
-          onMouseMove={onDrag}
-        >
+        <div className='relative w-16 h-16' onMouseDown={startDrag}>
           <div className='absolute inset-0 flex'>
             <DialBackground className='fill-slate-700 w-full h-full'></DialBackground>
           </div>
@@ -95,17 +149,17 @@ const Knob: React.FC<KnobProps> = ({ maxVal, minVal, defaultVal }) => {
             ></DialForeground>
           </div>
         </div>
-        <span>{rotation}</span>
-        <input
+        <span>{currVal}</span>
+        {/* <input
           type='range'
-          min={-130}
-          max={38}
+          min={minRotationDeg}
+          max={maxRotationDeg}
           value={rotation}
           className='range m-5'
           onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
             setRotation(Number(event.target.value));
           }}
-        />
+        /> */}
       </div>
     </div>
   );
