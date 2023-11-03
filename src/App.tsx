@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  MouseEventHandler,
+} from 'react';
 
 import Knob from './Knob';
 import Piano from './Piano';
@@ -318,17 +324,21 @@ function App() {
           style={{ height: `${pianoHeight}px` }}
         >
           <Piano
-            mouseDownCallback={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('mouseDown!');
-              startEnvelope(60, 0.7);
+            mouseDownCallbackCreator={(note: number) => {
+              const callback: MouseEventHandler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                startEnvelope(note, 0.7);
+              };
+              return callback;
             }}
-            mouseUpCallback={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              console.log('mouseUp!');
-              activeNotes.forEach((_, note) => endEnvelope(note));
+            mouseUpCallbackCreator={(note: number) => {
+              const callback: MouseEventHandler = (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                activeNotes.forEach((_, note) => endEnvelope(note));
+              };
+              return callback;
             }}
           ></Piano>
         </div>
