@@ -26,7 +26,9 @@ function App() {
   const [oscillatorType, setOscillatorType] = useState<OscillatorTypes>('sine');
 
   const midiInputs = useRef<Set<WebMidi.MIDIInput>>(new Set());
-  const [activeNotes, setActiveNotes] = useState<Map<number, { oscillator: OscillatorNode, adsrGainNode: GainNode }>>(new Map());
+  const [activeNotes, setActiveNotes] = useState<
+    Map<number, { oscillator: OscillatorNode; adsrGainNode: GainNode }>
+  >(new Map());
 
   const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVolume(Number(event.target.value));
@@ -66,95 +68,118 @@ function App() {
     setOscillatorType(event.target.value as OscillatorTypes);
   };
 
-  const startEnvelope = useCallback((noteNumber: number, velocity: number) => {
-    if (audioContext.current === null) {
-      return;
-    }
+  const startEnvelope = useCallback(
+    (noteNumber: number, velocity: number) => {
+      if (audioContext.current === null) {
+        return;
+      }
 
-    const newOscillator = createOscillator(audioContext.current, oscillatorType, noteNumber);
-    const newAdsrGainNode = createADSRNode(audioContext.current, envelopeParams);
-    const globalVolume = audioContext.current.createGain();
+      const newOscillator = createOscillator(
+        audioContext.current,
+        oscillatorType,
+        noteNumber
+      );
+      const newAdsrGainNode = createADSRNode(
+        audioContext.current,
+        envelopeParams
+      );
+      const globalVolume = audioContext.current.createGain();
 
-    const scaledVelocity = Math.pow(velocity, 1.5);
-    // const scaledVelocity = Math.log(1 + velocity / 127);
+      const scaledVelocity = Math.pow(velocity, 1.5);
+      // const scaledVelocity = Math.log(1 + velocity / 127);
 
-    globalVolume.gain.value = (volume / 100) * scaledVelocity; // Set the global volume
+      globalVolume.gain.value = (volume / 100) * scaledVelocity; // Set the global volume
 
-    globalVolume.connect(audioContext.current.destination);
-    newAdsrGainNode.connect(globalVolume);
-    newOscillator.connect(newAdsrGainNode);
-    newOscillator.start();
+      globalVolume.connect(audioContext.current.destination);
+      newAdsrGainNode.connect(globalVolume);
+      newOscillator.connect(newAdsrGainNode);
+      newOscillator.start();
 
-    setActiveNotes(prevNotes => {
-      const newNotes = new Map(prevNotes);
-      newNotes.set(noteNumber, { oscillator: newOscillator, adsrGainNode: newAdsrGainNode });
-      console.log(newNotes)
-      return newNotes;
-    });
-  }, [audioContext, oscillatorType, envelopeParams, volume]);
+      setActiveNotes((prevNotes) => {
+        const newNotes = new Map(prevNotes);
+        newNotes.set(noteNumber, {
+          oscillator: newOscillator,
+          adsrGainNode: newAdsrGainNode,
+        });
+        console.log(newNotes);
+        return newNotes;
+      });
+    },
+    [audioContext, oscillatorType, envelopeParams, volume]
+  );
 
   // Function to end the envelope
-  const endEnvelope = useCallback((noteNumber: number) => {
+  const endEnvelope = useCallback(
+    (noteNumber: number) => {
+      setActiveNotes((prevNotes) => {
+        if (!audioContext.current) {
+          return prevNotes;
+        }
 
-    setActiveNotes(prevNotes => {
-      if (!audioContext.current) {
-        return prevNotes
-      }
+        const newNotes = new Map(prevNotes);
+        const note = newNotes.get(noteNumber);
 
-      const newNotes = new Map(prevNotes);
-      const note = newNotes.get(noteNumber);
+        if (note) {
+          note.adsrGainNode.gain.setValueAtTime(
+            note.adsrGainNode.gain.value,
+            audioContext.current.currentTime
+          ); // Set the current gain immediately
+          note.adsrGainNode.gain.exponentialRampToValueAtTime(
+            0.00001,
+            audioContext.current.currentTime + envelopeParams.release
+          ); // Exponential release phase
 
-      if (note) {
-        note.adsrGainNode.gain.setValueAtTime(note.adsrGainNode.gain.value, audioContext.current.currentTime); // Set the current gain immediately
-        note.adsrGainNode.gain.exponentialRampToValueAtTime(0.00001, audioContext.current.currentTime + envelopeParams.release); // Exponential release phase
+          // Optionally, stop and disconnect the oscillator after the release phase is done
+          setTimeout(() => {
+            note.oscillator.stop();
+            note.oscillator.disconnect();
+            note.adsrGainNode.disconnect();
+          }, envelopeParams.release * 1000); // setTimeout uses milliseconds
 
-        // Optionally, stop and disconnect the oscillator after the release phase is done
-        setTimeout(() => {
-          note.oscillator.stop();
-          note.oscillator.disconnect();
-          note.adsrGainNode.disconnect();
-        }, envelopeParams.release * 1000); // setTimeout uses milliseconds
+          newNotes.delete(noteNumber);
+        }
 
-        newNotes.delete(noteNumber);
-      }
-
-      return newNotes;
-    });
-  }, [audioContext, envelopeParams.release]);
+        return newNotes;
+      });
+    },
+    [audioContext, envelopeParams.release]
+  );
 
   useEffect(() => {
     const AudioContext = window.AudioContext;
     audioContext.current = new AudioContext();
-
   }, []);
 
   // Function to handle incoming MIDI messages
-  const handleMIDIMessage = useCallback((event: Event) => {
-    const message = event as MIDIMessageEvent;
-    const [status, note, velocity] = message.data;
+  const handleMIDIMessage = useCallback(
+    (event: Event) => {
+      const message = event as MIDIMessageEvent;
+      const [status, note, velocity] = message.data;
 
-    // MIDI "note on" message
-    if (status === 144) {
-      startEnvelope(note, velocity / 127);
-    }
+      // MIDI "note on" message
+      if (status === 144) {
+        startEnvelope(note, velocity / 127);
+      }
 
-    // MIDI "note off" message
-    else if (status === 128) {
-      endEnvelope(note);
-    }
-  }, [startEnvelope, endEnvelope]);
+      // MIDI "note off" message
+      else if (status === 128) {
+        endEnvelope(note);
+      }
+    },
+    [startEnvelope, endEnvelope]
+  );
 
   // Function to initialize the MIDI API
   const initializeMIDI = useCallback(async () => {
     if (!navigator.requestMIDIAccess) {
-      console.log("WebMIDI is not supported in this browser.");
+      console.log('WebMIDI is not supported in this browser.');
       return;
     }
 
     const midiAccess: WebMidi.MIDIAccess = await navigator.requestMIDIAccess();
 
     midiInputs.current.forEach((input) => {
-      input.onmidimessage = () => { };
+      input.onmidimessage = () => {};
     });
 
     // Listen for MIDI messages on all inputs
@@ -163,16 +188,14 @@ function App() {
 
       // Only add the input to the state if it's not already there
 
-      const prevInputs = midiInputs.current
+      const prevInputs = midiInputs.current;
       if (!prevInputs.has(input)) {
         const newMidiInputs = new Set(prevInputs);
         newMidiInputs.add(input);
-        midiInputs.current = newMidiInputs
+        midiInputs.current = newMidiInputs;
       }
-
     }
-  }, [handleMIDIMessage])
-
+  }, [handleMIDIMessage]);
 
   // Call the initializeMIDI function when the component mounts
   // useEffect(() => {
@@ -185,7 +208,7 @@ function App() {
   //   };
   // }, [initializeMIDI]);
 
-  const pianoHeight = 180
+  const pianoHeight = 180;
 
   return (
     <div className='App h-full'>
@@ -296,8 +319,9 @@ function App() {
         >
           <Piano
             mouseDownCallback={() => {
-              console.log('starting envelope!')
-              startEnvelope(60, 0.7)}}
+              console.log('starting envelope!');
+              startEnvelope(60, 0.7);
+            }}
             mouseUpCallback={() => {
               activeNotes.forEach((_, note) => endEnvelope(note));
             }}
