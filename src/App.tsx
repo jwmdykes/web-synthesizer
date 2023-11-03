@@ -1,4 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
+
+import Knob from './Knob';
+
 import {
   EnvelopeParams,
   createADSRNode,
@@ -171,15 +174,15 @@ function App() {
 
 
   // Call the initializeMIDI function when the component mounts
-  useEffect(() => {
-    console.log('doing midi')
-    initializeMIDI();
-    return () => {
-      midiInputs.current.forEach((input) => {
-        input.onmidimessage = () => { };
-      });
-    };
-  }, [initializeMIDI]);
+  // useEffect(() => {
+  //   console.log('doing midi')
+  //   initializeMIDI();
+  //   return () => {
+  //     midiInputs.current.forEach((input) => {
+  //       input.onmidimessage = () => { };
+  //     });
+  //   };
+  // }, [initializeMIDI]);
 
   return (
     <div className='App h-full'>
@@ -192,22 +195,26 @@ function App() {
       </nav>
 
       <main className='flex flex-col gap-5'>
-        <div className='flex flex-row gap-3 justify-center'>
+        {/* <div className='flex flex-row gap-3 justify-center'>
           <button
-            className={`btn ${activeNotes.size > 0 ? 'btn-disabled' : 'btn-primary'}`}
-            onClick={() => startEnvelope(60, 0.7)}  // Assuming you want to play note 60 when the button is clicked
+            className={`btn ${
+              activeNotes.size > 0 ? 'btn-disabled' : 'btn-primary'
+            }`}
+            onClick={() => startEnvelope(60, 0.7)} // Assuming you want to play note 60 when the button is clicked
           >
             Play Sound!
           </button>
           <button
             className='btn btn-primary'
-            onClick={() => { activeNotes.forEach((_, note) => endEnvelope(note)); }} // Ends all currently playing notes
+            onClick={() => {
+              activeNotes.forEach((_, note) => endEnvelope(note));
+            }} // Ends all currently playing notes
           >
             Stop Sound!
           </button>
-        </div>
+        </div> */}
         <div className='m-auto flex flex-col gap-2'>
-          <h2 className='text-xl'>Oscillator Type</h2>
+          {/* <h2 className='text-xl'>Oscillator Type</h2>
           <select
             className='select w-full max-w-xs'
             value={oscillatorType}
@@ -266,7 +273,9 @@ function App() {
             value={envelopeParams.release}
             className='range'
             onChange={handleReleaseChange}
-          />
+          /> */}
+          <h1 className='text-4xl'>Testing Knobs!</h1>
+          <Knob maxVal={1} minVal={0.01} defaultVal={0.05}></Knob>
         </div>
       </main>
     </div>
