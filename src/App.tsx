@@ -198,7 +198,10 @@ function App() {
       </nav>
 
       <main>
-        <div className={`flex flex-col gap-5`} style={{paddingBottom: `${pianoHeight + 16}px`}}>
+        <div
+          className={`flex flex-col gap-5`}
+          style={{ paddingBottom: `${pianoHeight + 16}px` }}
+        >
           <div className='flex flex-row gap-3 justify-center'>
             <button
               className={`btn ${
@@ -287,8 +290,18 @@ function App() {
             ></Knob>
           </div>
         </div>
-        <div className={`fixed bottom-0 w-full`} style={{height: `${pianoHeight}px`}}>
-          <Piano></Piano>
+        <div
+          className={`fixed bottom-0 w-full`}
+          style={{ height: `${pianoHeight}px` }}
+        >
+          <Piano
+            mouseDownCallback={() => {
+              console.log('starting envelope!')
+              startEnvelope(60, 0.7)}}
+            mouseUpCallback={() => {
+              activeNotes.forEach((_, note) => endEnvelope(note));
+            }}
+          ></Piano>
         </div>
       </main>
     </div>
