@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 
 import Knob from './Knob';
+import Piano from './Piano';
 
 import {
   EnvelopeParams,
@@ -184,6 +185,8 @@ function App() {
   //   };
   // }, [initializeMIDI]);
 
+  const pianoHeight = 180
+
   return (
     <div className='App h-full'>
       <nav className='navbar bg-base-100'>
@@ -194,88 +197,98 @@ function App() {
         </div>
       </nav>
 
-      <main className='flex flex-col gap-5'>
-        {/* <div className='flex flex-row gap-3 justify-center'>
-          <button
-            className={`btn ${
-              activeNotes.size > 0 ? 'btn-disabled' : 'btn-primary'
-            }`}
-            onClick={() => startEnvelope(60, 0.7)} // Assuming you want to play note 60 when the button is clicked
-          >
-            Play Sound!
-          </button>
-          <button
-            className='btn btn-primary'
-            onClick={() => {
-              activeNotes.forEach((_, note) => endEnvelope(note));
-            }} // Ends all currently playing notes
-          >
-            Stop Sound!
-          </button>
-        </div> */}
-        <div className='m-auto flex flex-col gap-2'>
-          {/* <h2 className='text-xl'>Oscillator Type</h2>
-          <select
-            className='select w-full max-w-xs'
-            value={oscillatorType}
-            onChange={handleOscillatorTypeChange}
-          >
-            <option value='sine'>sine</option>
-            <option value='square'>square</option>
-            <option value='triangle'>triangle</option>
-          </select>
-          <h2 className='text-xl'>Gain: {volume}</h2>
-          <input
-            type='range'
-            min={0}
-            max='100'
-            value={volume}
-            className='range'
-            onChange={handleVolumeChange}
-          />
-          <h2 className='text-xl'>Amplitude Envelope</h2>
-          <h3>Attack: {envelopeParams.attack}</h3>
-          <input
-            type='range'
-            min={0.01}
-            max='1'
-            step='0.01'
-            value={envelopeParams.attack}
-            className='range'
-            onChange={handleAttackChange}
-          />
-          <h3>Decay: {envelopeParams.decay}</h3>
-          <input
-            type='range'
-            min={0}
-            max='1'
-            step='0.01'
-            value={envelopeParams.decay}
-            className='range'
-            onChange={handleDecayChange}
-          />
-          <h3>Sustain: {envelopeParams.sustain}</h3>
-          <input
-            type='range'
-            min={0.01}
-            max='1'
-            step='0.01'
-            value={envelopeParams.sustain}
-            className='range'
-            onChange={handleSustainChange}
-          />
-          <h3>Release: {envelopeParams.release}</h3>
-          <input
-            type='range'
-            min={0.01}
-            max='3'
-            step='0.01'
-            value={envelopeParams.release}
-            className='range'
-            onChange={handleReleaseChange}
-          /> */}
-          <h1 className='text-4xl'>Testing Knobs!</h1>
-          <Knob maxVal={100} minVal={0} defaultVal={25} sensitivity={0.75}></Knob>
+      <main>
+        <div className={`flex flex-col gap-5`} style={{paddingBottom: `${pianoHeight + 16}px`}}>
+          <div className='flex flex-row gap-3 justify-center'>
+            <button
+              className={`btn ${
+                activeNotes.size > 0 ? 'btn-disabled' : 'btn-primary'
+              }`}
+              onClick={() => startEnvelope(60, 0.7)} // Assuming you want to play note 60 when the button is clicked
+            >
+              Play Sound!
+            </button>
+            <button
+              className='btn btn-primary'
+              onClick={() => {
+                activeNotes.forEach((_, note) => endEnvelope(note));
+              }} // Ends all currently playing notes
+            >
+              Stop Sound!
+            </button>
+          </div>
+          <div className='m-auto flex flex-col gap-2'>
+            <h2 className='text-xl'>Oscillator Type</h2>
+            <select
+              className='select w-full max-w-xs'
+              value={oscillatorType}
+              onChange={handleOscillatorTypeChange}
+            >
+              <option value='sine'>sine</option>
+              <option value='square'>square</option>
+              <option value='triangle'>triangle</option>
+            </select>
+            <h2 className='text-xl'>Gain: {volume}</h2>
+            <input
+              type='range'
+              min={0}
+              max='100'
+              value={volume}
+              className='range'
+              onChange={handleVolumeChange}
+            />
+            <h2 className='text-xl'>Amplitude Envelope</h2>
+            <h3>Attack: {envelopeParams.attack}</h3>
+            <input
+              type='range'
+              min={0.01}
+              max='1'
+              step='0.01'
+              value={envelopeParams.attack}
+              className='range'
+              onChange={handleAttackChange}
+            />
+            <h3>Decay: {envelopeParams.decay}</h3>
+            <input
+              type='range'
+              min={0}
+              max='1'
+              step='0.01'
+              value={envelopeParams.decay}
+              className='range'
+              onChange={handleDecayChange}
+            />
+            <h3>Sustain: {envelopeParams.sustain}</h3>
+            <input
+              type='range'
+              min={0.01}
+              max='1'
+              step='0.01'
+              value={envelopeParams.sustain}
+              className='range'
+              onChange={handleSustainChange}
+            />
+            <h3>Release: {envelopeParams.release}</h3>
+            <input
+              type='range'
+              min={0.01}
+              max='3'
+              step='0.01'
+              value={envelopeParams.release}
+              className='range'
+              onChange={handleReleaseChange}
+            />
+            <h1 className='text-4xl'>Testing Knobs!</h1>
+            <Knob
+              maxVal={100}
+              minVal={0}
+              defaultVal={25}
+              sensitivity={0.75}
+            ></Knob>
+          </div>
+        </div>
+        <div className={`fixed bottom-0 w-full`} style={{height: `${pianoHeight}px`}}>
+          <Piano></Piano>
         </div>
       </main>
     </div>
