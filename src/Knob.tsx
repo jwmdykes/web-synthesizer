@@ -2,61 +2,60 @@ import { useState, useCallback, useEffect, MouseEventHandler } from 'react';
 import { ReactComponent as DialBackground } from './svg1.svg';
 import { ReactComponent as DialForeground } from './svg2.svg';
 
-  // Convert a value to a rotation degree between minRotationDeg and maxRotationDeg
-  const convertValueToRotation = (
-    value: number,
-    minVal: number,
-    maxVal: number,
-    minRotationDeg: number,
-    maxRotationDeg: number
-  ): number => {
-    // First, clamp the value within the allowed range
-    const clampedValue = Math.min(Math.max(value, minVal), maxVal);
+// Convert a value to a rotation degree between minRotationDeg and maxRotationDeg
+const convertValueToRotation = (
+  value: number,
+  minVal: number,
+  maxVal: number,
+  minRotationDeg: number,
+  maxRotationDeg: number
+): number => {
+  // First, clamp the value within the allowed range
+  const clampedValue = Math.min(Math.max(value, minVal), maxVal);
 
-    // Calculate the total range of possible values
-    const valueRange = maxVal - minVal;
+  // Calculate the total range of possible values
+  const valueRange = maxVal - minVal;
 
-    // Calculate how far along that range the current value is, as a percentage
-    const valuePercentage = (clampedValue - minVal) / valueRange;
+  // Calculate how far along that range the current value is, as a percentage
+  const valuePercentage = (clampedValue - minVal) / valueRange;
 
-    // Now calculate the rotation range
-    const rotationRange = maxRotationDeg - minRotationDeg;
+  // Now calculate the rotation range
+  const rotationRange = maxRotationDeg - minRotationDeg;
 
-    // Apply the percentage to the rotation range
-    const rotation = valuePercentage * rotationRange + minRotationDeg;
+  // Apply the percentage to the rotation range
+  const rotation = valuePercentage * rotationRange + minRotationDeg;
 
-    return rotation;
-  };
+  return rotation;
+};
 
-  // Convert the rotation to a value between minVal and maxVal
-  const convertRotationToValue = (
-    rotation: number,
-    minVal: number,
-    maxVal: number,
-    minRotationDeg: number,
-    maxRotationDeg: number
-  ) => {
-    // First, clamp the rotation within the allowed range
-    const clampedRotation = Math.min(
-      Math.max(rotation, minRotationDeg),
-      maxRotationDeg
-    );
+// Convert the rotation to a value between minVal and maxVal
+const convertRotationToValue = (
+  rotation: number,
+  minVal: number,
+  maxVal: number,
+  minRotationDeg: number,
+  maxRotationDeg: number
+) => {
+  // First, clamp the rotation within the allowed range
+  const clampedRotation = Math.min(
+    Math.max(rotation, minRotationDeg),
+    maxRotationDeg
+  );
 
-    // Calculate the total range of rotation
-    const rotationRange = maxRotationDeg - minRotationDeg;
+  // Calculate the total range of rotation
+  const rotationRange = maxRotationDeg - minRotationDeg;
 
-    // Calculate how far along that range the current rotation is, as a percentage
-    const rotationPercentage =
-      (clampedRotation - minRotationDeg) / rotationRange;
+  // Calculate how far along that range the current rotation is, as a percentage
+  const rotationPercentage = (clampedRotation - minRotationDeg) / rotationRange;
 
-    // Now calculate the value range
-    const valueRange = maxVal - minVal;
+  // Now calculate the value range
+  const valueRange = maxVal - minVal;
 
-    // Apply the percentage to the value range
-    const value = rotationPercentage * valueRange + minVal;
+  // Apply the percentage to the value range
+  const value = rotationPercentage * valueRange + minVal;
 
-    return Math.round(value);
-  };
+  return Math.round(value);
+};
 
 // Define a type for the component's props
 type KnobProps = {
@@ -66,11 +65,24 @@ type KnobProps = {
   sensitivity: number;
 };
 
-const Knob: React.FC<KnobProps> = ({ maxVal, minVal, defaultVal, sensitivity }) => {
+const Knob: React.FC<KnobProps> = ({
+  maxVal,
+  minVal,
+  defaultVal,
+  sensitivity,
+}) => {
   const minRotationDeg = -130;
   const maxRotationDeg = 40;
   const [currVal, setCurrVal] = useState(defaultVal);
-  const [rotation, setRotation] = useState(convertValueToRotation(defaultVal, minVal, maxVal, minRotationDeg, maxRotationDeg)); // Initial rotation
+  const [rotation, setRotation] = useState(
+    convertValueToRotation(
+      defaultVal,
+      minVal,
+      maxVal,
+      minRotationDeg,
+      maxRotationDeg
+    )
+  ); // Initial rotation
   const [isDragging, setIsDragging] = useState(false);
   const [startY, setStartY] = useState(0); // Starting Y position for the drag
   const [startRotation, setStartRotation] = useState(0); // Starting rotation at the beginning of the drag
@@ -112,7 +124,18 @@ const Knob: React.FC<KnobProps> = ({ maxVal, minVal, defaultVal, sensitivity }) 
     setIsDragging(false);
   }, []);
 
-
+  const resetValues = useCallback(() => {
+    setCurrVal(defaultVal);
+    setRotation(
+      convertValueToRotation(
+        defaultVal,
+        minVal,
+        maxVal,
+        minRotationDeg,
+        maxRotationDeg
+      )
+    )
+  }, []);
 
   // Add event listeners when dragging starts and remove them when it ends
   useEffect(() => {
@@ -133,7 +156,11 @@ const Knob: React.FC<KnobProps> = ({ maxVal, minVal, defaultVal, sensitivity }) 
   return (
     <div className='flex flex-col items-start'>
       <div className='flex flex-col items-center'>
-        <div className='relative w-16 h-16' onMouseDown={startDrag}>
+        <div
+          className='relative w-16 h-16'
+          onMouseDown={startDrag}
+          onDoubleClick={resetValues}
+        >
           <div className='absolute inset-0 flex'>
             <DialBackground className='fill-slate-700 w-full h-full'></DialBackground>
           </div>
