@@ -318,11 +318,16 @@ function App() {
           style={{ height: `${pianoHeight}px` }}
         >
           <Piano
-            mouseDownCallback={() => {
-              console.log('starting envelope!');
+            mouseDownCallback={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('mouseDown!');
               startEnvelope(60, 0.7);
             }}
-            mouseUpCallback={() => {
+            mouseUpCallback={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              console.log('mouseUp!');
               activeNotes.forEach((_, note) => endEnvelope(note));
             }}
           ></Piano>
