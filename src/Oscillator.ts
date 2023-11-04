@@ -7,7 +7,7 @@ export type EnvelopeParams = {
   release: number;
 }
 
-export type OscillatorTypes = 'sine' | 'square' | 'triangle'
+export type OscillatorTypes = 'sine' | 'square' | 'triangle' | 'sawtooth'
 
 
 export const createADSRNode = (audioContext: AudioContext, { attack, decay, sustain, release }: EnvelopeParams, startAt = audioContext.currentTime) => {

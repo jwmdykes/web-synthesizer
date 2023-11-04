@@ -6,7 +6,6 @@ import React, {
   MouseEventHandler,
 } from 'react';
 
-import Knob from './Knob';
 import Piano from './Piano';
 import ControlBoxHeader from './ControlBoxHeader';
 
@@ -16,6 +15,9 @@ import {
   createOscillator,
   OscillatorTypes,
 } from './Oscillator';
+
+import { createFilterNode, filterParams, filterType } from './Filter';
+
 import SingleKnobControl from './SingleKnobControl';
 import ControlBox from './ControlBox';
 
@@ -32,6 +34,11 @@ function App() {
     sustain: 0.5,
     release: 0.3,
   });
+  const [filterParams, setFilterParams] = useState<filterParams>({
+    type: 'lowpass',
+    frequency: 350,
+    Q: 1,
+  });
   const [oscillatorType, setOscillatorType] = useState<OscillatorTypes>('sine');
 
   const midiInputs = useRef<Set<WebMidi.MIDIInput>>(new Set());
@@ -41,6 +48,27 @@ function App() {
 
   const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVolume(Number(event.target.value));
+  };
+
+  const handleFilterFrequencyChange = (val: number) => {
+    setFilterParams((prevState) => ({
+      ...prevState,
+      frequency: val,
+    }));
+  };
+
+  const handleFilterQChange = (val: number) => {
+    setFilterParams((prevState) => ({
+      ...prevState,
+      Q: val,
+    }));
+  };
+
+  const handleFilterTypeChange = (val: filterType) => {
+    setFilterParams((prevState) => ({
+      ...prevState,
+      type: val,
+    }));
   };
 
   const handleAttackChange = (val: number) => {
@@ -92,6 +120,10 @@ function App() {
         audioContext.current,
         envelopeParams
       );
+      const newFilterNode = createFilterNode(
+        audioContext.current,
+        filterParams
+      );
       const globalVolume = audioContext.current.createGain();
 
       const scaledVelocity = Math.pow(velocity, 1.5);
@@ -100,7 +132,8 @@ function App() {
       globalVolume.gain.value = (volume / 100) * scaledVelocity; // Set the global volume
 
       globalVolume.connect(audioContext.current.destination);
-      newAdsrGainNode.connect(globalVolume);
+      newFilterNode.connect(globalVolume);
+      newAdsrGainNode.connect(newFilterNode);
       newOscillator.connect(newAdsrGainNode);
       newOscillator.start();
 
@@ -114,7 +147,7 @@ function App() {
         return newNotes;
       });
     },
-    [audioContext, oscillatorType, envelopeParams, volume]
+    [audioContext, oscillatorType, envelopeParams, volume, filterParams]
   );
 
   // Function to end the envelope
@@ -245,6 +278,7 @@ function App() {
                 <option value='sine'>sine</option>
                 <option value='square'>square</option>
                 <option value='triangle'>triangle</option>
+                <option value='sawtooth'>sawtooth</option>
               </select>
             </ControlBox>
 
@@ -298,6 +332,30 @@ function App() {
                   step={0.01}
                   sensitivity={0.25}
                   onChange={handleReleaseChange}
+                ></SingleKnobControl>
+              </div>
+            </ControlBox>
+
+            <ControlBox>
+              <ControlBoxHeader text='Filter'></ControlBoxHeader>
+              <div className='flex gap-6'>
+                <SingleKnobControl
+                  text='Freq'
+                  defaultVal={350}
+                  minVal={20}
+                  maxVal={2000}
+                  step={5}
+                  sensitivity={0.5}
+                  onChange={handleFilterFrequencyChange}
+                ></SingleKnobControl>
+                <SingleKnobControl
+                  text='Resonance'
+                  defaultVal={1}
+                  minVal={0.1}
+                  maxVal={10}
+                  step={0.1}
+                  sensitivity={0.5}
+                  onChange={handleFilterQChange}
                 ></SingleKnobControl>
               </div>
             </ControlBox>
