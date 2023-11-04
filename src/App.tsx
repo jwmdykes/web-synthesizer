@@ -326,7 +326,7 @@ function App() {
           <div className='mx-auto container px-6 grid grid-cols-2 gap-2'>
             <ControlBox>
               <ControlBoxHeader text='Oscillator Type'></ControlBoxHeader>
-              <div className='flex items-center justify-between gap-4'>
+              <div className='flex items-center justify-center w-full gap-6 desktop:gap-12'>
                 <OscillatorButton
                   text='Sine'
                   src={sineWave}
