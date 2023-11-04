@@ -19,7 +19,7 @@ export default function OscillatorButton(props: {
         <img
           src={props.src}
           alt='Sine Wave Oscillator'
-          className={`object-contain max-h-full max-w-[40px] tablet:max-w-[75px] desktop::max-h-[100px]`}
+          className={`pointer-events-none object-contain max-h-full max-w-[40px] tablet:max-w-[75px] desktop::max-h-[100px]`}
         />
       </div>
       <span className={`text-sm tracking-wider`}>{props.text}</span>
