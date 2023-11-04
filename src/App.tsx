@@ -323,7 +323,7 @@ function App() {
           className={`flex flex-col gap-5 pt-6`}
           style={{ paddingBottom: `${pianoHeight + 16}px` }}
         >
-          <div className='px-6 grid grid-cols-2 gap-2'>
+          <div className='mx-auto container px-6 grid grid-cols-2 gap-2'>
             <ControlBox>
               <ControlBoxHeader text='Oscillator Type'></ControlBoxHeader>
               <div className='flex items-center justify-between gap-4'>
@@ -424,6 +424,14 @@ function App() {
                   onChange={handleFilterQChange}
                 ></SingleKnobControl>
               </div>
+            </ControlBox>
+
+            <ControlBox>
+              <ControlBoxHeader text='Effects'></ControlBoxHeader>
+            </ControlBox>
+
+            <ControlBox>
+              <ControlBoxHeader text='LFO'></ControlBoxHeader>
             </ControlBox>
           </div>
         </div>
