@@ -21,6 +21,9 @@ import { createFilterNode, filterParams, filterType } from './Filter';
 import SingleKnobControl from './SingleKnobControl';
 import ControlBox from './ControlBox';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faQuestion } from '@fortawesome/free-solid-svg-icons';
+
 interface MIDIMessageEvent extends Event {
   data: Uint8Array;
 }
@@ -252,16 +255,59 @@ function App() {
 
   const pianoHeight = 180;
 
+  const [modalVisible, setModalVisibility] = useState(false);
+  const toggleModalVisible = () => {
+    console.log('toggling visibility!');
+    console.log(`modalVisible: ${modalVisible}`);
+    setModalVisibility((prevVisibility) => {
+      return !prevVisibility;
+    });
+  };
+
   return (
     <div className='App h-full'>
-      <nav className='navbar bg-base-100'>
+      {/* help modal */}
+      {modalVisible && (
+        <div
+          className='fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center p-4'
+          onClick={toggleModalVisible}
+        >
+          <div
+            className='bg-base-100 p-6 rounded-lg shadow-lg w-full max-w-md z-50 overflow-auto'
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className='text-center'>
+              <h2 className='text-2xl font-bold mb-4'>About</h2>
+              <p className='mb-4'>
+                Oscillator icons are created by{' '}
+                <a href='https://www.flaticon.com/authors/judanna'>
+                  <em className='not-italic text-primary-content hover:underline underline-offset-4'>
+                    judanna
+                  </em>
+                </a>{' '}
+              </p>
+              <button className='btn' onClick={toggleModalVisible}>
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* navbar */}
+      <nav className='px-2 pt-2 flex items-center justify-between bg-base-100'>
         <div className='navbar-start'>
           <a href='/' className='btn btn-ghost normal-case text-xl'>
             Synthesizer
           </a>
         </div>
+        <div
+          className='mr-2 h-8 w-8 bg-slate-900 rounded-full flex items-center justify-center hover:cursor-pointer hover:bg-slate-800'
+          onClick={toggleModalVisible}
+        >
+          <FontAwesomeIcon icon={faQuestion} size='1x' />
+        </div>
       </nav>
-
       <main>
         <div
           className={`flex flex-col gap-5 pt-6`}
