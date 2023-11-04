@@ -8,6 +8,7 @@ import React, {
 
 import Knob from './Knob';
 import Piano from './Piano';
+import ControlBoxHeader from './ControlBoxHeader';
 
 import {
   EnvelopeParams,
@@ -15,6 +16,8 @@ import {
   createOscillator,
   OscillatorTypes,
 } from './Oscillator';
+import SingleKnobControl from './SingleKnobControl';
+import ControlBox from './ControlBox';
 
 interface MIDIMessageEvent extends Event {
   data: Uint8Array;
@@ -40,31 +43,31 @@ function App() {
     setVolume(Number(event.target.value));
   };
 
-  const handleAttackChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleAttackChange = (val: number) => {
     setEnvelopeParams((prevState) => ({
       ...prevState,
-      attack: Number(event.target.value),
+      attack: val,
     }));
   };
 
-  const handleDecayChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleDecayChange = (val: number) => {
     setEnvelopeParams((prevState) => ({
       ...prevState,
-      decay: Number(event.target.value),
+      decay: Number(val),
     }));
   };
 
-  const handleSustainChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSustainChange = (val: number) => {
     setEnvelopeParams((prevState) => ({
       ...prevState,
-      sustain: Number(event.target.value),
+      sustain: Number(val),
     }));
   };
 
-  const handleReleaseChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleReleaseChange = (val: number) => {
     setEnvelopeParams((prevState) => ({
       ...prevState,
-      release: Number(event.target.value),
+      release: Number(val),
     }));
   };
 
@@ -228,95 +231,76 @@ function App() {
 
       <main>
         <div
-          className={`flex flex-col gap-5`}
+          className={`flex flex-col gap-5 pt-6`}
           style={{ paddingBottom: `${pianoHeight + 16}px` }}
         >
-          <div className='flex flex-row gap-3 justify-center'>
-            <button
-              className={`btn ${
-                activeNotes.size > 0 ? 'btn-disabled' : 'btn-primary'
-              }`}
-              onClick={() => startEnvelope(60, 0.7)} // Assuming you want to play note 60 when the button is clicked
-            >
-              Play Sound!
-            </button>
-            <button
-              className='btn btn-primary'
-              onClick={() => {
-                activeNotes.forEach((_, note) => endEnvelope(note));
-              }} // Ends all currently playing notes
-            >
-              Stop Sound!
-            </button>
-          </div>
-          <div className='m-auto flex flex-col gap-2'>
-            <h2 className='text-xl'>Oscillator Type</h2>
-            <select
-              className='select w-full max-w-xs'
-              value={oscillatorType}
-              onChange={handleOscillatorTypeChange}
-            >
-              <option value='sine'>sine</option>
-              <option value='square'>square</option>
-              <option value='triangle'>triangle</option>
-            </select>
-            <h2 className='text-xl'>Gain: {volume}</h2>
-            <input
-              type='range'
-              min={0}
-              max='100'
-              value={volume}
-              className='range'
-              onChange={handleVolumeChange}
-            />
-            <h2 className='text-xl'>Amplitude Envelope</h2>
-            <h3>Attack: {envelopeParams.attack}</h3>
-            <input
-              type='range'
-              min={0.01}
-              max='1'
-              step='0.01'
-              value={envelopeParams.attack}
-              className='range'
-              onChange={handleAttackChange}
-            />
-            <h3>Decay: {envelopeParams.decay}</h3>
-            <input
-              type='range'
-              min={0}
-              max='1'
-              step='0.01'
-              value={envelopeParams.decay}
-              className='range'
-              onChange={handleDecayChange}
-            />
-            <h3>Sustain: {envelopeParams.sustain}</h3>
-            <input
-              type='range'
-              min={0.01}
-              max='1'
-              step='0.01'
-              value={envelopeParams.sustain}
-              className='range'
-              onChange={handleSustainChange}
-            />
-            <h3>Release: {envelopeParams.release}</h3>
-            <input
-              type='range'
-              min={0.01}
-              max='3'
-              step='0.01'
-              value={envelopeParams.release}
-              className='range'
-              onChange={handleReleaseChange}
-            />
-            <h1 className='text-4xl'>Testing Knobs!</h1>
-            <Knob
-              maxVal={100}
-              minVal={0}
-              defaultVal={25}
-              sensitivity={0.75}
-            ></Knob>
+          <div className='px-6 grid grid-cols-2 gap-2'>
+            <ControlBox>
+              <ControlBoxHeader text='Oscillator Type'></ControlBoxHeader>
+              <select
+                className='select w-full max-w-xs'
+                value={oscillatorType}
+                onChange={handleOscillatorTypeChange}
+              >
+                <option value='sine'>sine</option>
+                <option value='square'>square</option>
+                <option value='triangle'>triangle</option>
+              </select>
+            </ControlBox>
+
+            <ControlBox>
+              <ControlBoxHeader text={`Gain: ${volume}`}></ControlBoxHeader>
+              <input
+                type='range'
+                min={0}
+                max='100'
+                value={volume}
+                className='range'
+                onChange={handleVolumeChange}
+              />
+            </ControlBox>
+
+            <ControlBox>
+              <ControlBoxHeader text='Amplitude Envelope'></ControlBoxHeader>
+              <div className='flex gap-6'>
+                <SingleKnobControl
+                  text='Attack'
+                  defaultVal={0.01}
+                  minVal={0.01}
+                  maxVal={1}
+                  step={0.01}
+                  sensitivity={0.25}
+                  onChange={handleAttackChange}
+                ></SingleKnobControl>
+                <SingleKnobControl
+                  text='Decay'
+                  defaultVal={0.01}
+                  minVal={0.01}
+                  maxVal={1}
+                  step={0.01}
+                  sensitivity={0.25}
+                  onChange={handleDecayChange}
+                ></SingleKnobControl>
+                <SingleKnobControl
+                  text='Sustain'
+                  defaultVal={0.01}
+                  minVal={0.01}
+                  maxVal={1}
+                  step={0.01}
+                  sensitivity={0.25}
+                  onChange={handleSustainChange}
+                ></SingleKnobControl>
+                <SingleKnobControl
+                  text='Release'
+                  defaultVal={0.01}
+                  minVal={0.01}
+                  maxVal={1}
+                  step={0.01}
+                  sensitivity={0.25}
+                  onChange={handleReleaseChange}
+                ></SingleKnobControl>
+              </div>
+            </ControlBox>
           </div>
         </div>
         <div

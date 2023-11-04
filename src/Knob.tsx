@@ -2,6 +2,18 @@ import { useState, useCallback, useEffect, MouseEventHandler } from 'react';
 import { ReactComponent as DialBackground } from './svg1.svg';
 import { ReactComponent as DialForeground } from './svg2.svg';
 
+function round(value: number, step: number) {
+  step || (step = 1.0);
+  var inv = 1.0 / step;
+  return Math.round(value * inv) / inv;
+}
+
+// Function to determine the number of decimal places
+function getDecimalPlaces(number: number) {
+  if (Math.floor(number) === number) return 0;
+  return number.toString().split('.')[1].length || 0;
+}
+
 // Convert a value to a rotation degree between minRotationDeg and maxRotationDeg
 const convertValueToRotation = (
   value: number,
@@ -34,7 +46,8 @@ const convertRotationToValue = (
   minVal: number,
   maxVal: number,
   minRotationDeg: number,
-  maxRotationDeg: number
+  maxRotationDeg: number,
+  step: number
 ) => {
   // First, clamp the rotation within the allowed range
   const clampedRotation = Math.min(
@@ -52,9 +65,12 @@ const convertRotationToValue = (
   const valueRange = maxVal - minVal;
 
   // Apply the percentage to the value range
-  const value = rotationPercentage * valueRange + minVal;
+  let value = rotationPercentage * valueRange + minVal;
 
-  return Math.round(value);
+  // Round to the nearest increment of the step
+  value = round(value, step);
+
+  return value;
 };
 
 // Define a type for the component's props
@@ -62,18 +78,29 @@ type KnobProps = {
   maxVal: number;
   minVal: number;
   defaultVal: number;
+  step: number;
   sensitivity: number;
+  onChange: (val: number) => void;
 };
 
 const Knob: React.FC<KnobProps> = ({
   maxVal,
   minVal,
   defaultVal,
+  step,
   sensitivity,
+  onChange,
 }) => {
   const minRotationDeg = -130;
   const maxRotationDeg = 40;
-  const [currVal, setCurrVal] = useState(defaultVal);
+  const stepDecimalPlaces = getDecimalPlaces(step);
+  const [currVal, _setCurrVal] = useState(defaultVal);
+
+  const setCurrVal = (val: number) => {
+    _setCurrVal(val);
+    onChange(val);
+  };
+
   const [rotation, setRotation] = useState(
     convertValueToRotation(
       defaultVal,
@@ -112,7 +139,8 @@ const Knob: React.FC<KnobProps> = ({
           minVal,
           maxVal,
           minRotationDeg,
-          maxRotationDeg
+          maxRotationDeg,
+          step
         ); // Convert rotation to value
         setCurrVal(newVal); // Set the new value
       }
@@ -134,7 +162,7 @@ const Knob: React.FC<KnobProps> = ({
         minRotationDeg,
         maxRotationDeg
       )
-    )
+    );
   }, []);
 
   // Add event listeners when dragging starts and remove them when it ends
@@ -176,7 +204,7 @@ const Knob: React.FC<KnobProps> = ({
             ></DialForeground>
           </div>
         </div>
-        <span>{currVal}</span>
+        <span>{currVal.toFixed(stepDecimalPlaces)}</span>
         {/* <input
           type='range'
           min={minRotationDeg}
