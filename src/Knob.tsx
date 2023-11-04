@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, MouseEventHandler } from 'react';
-import { ReactComponent as DialBackground } from './svg1.svg';
-import { ReactComponent as DialForeground } from './svg2.svg';
+import { ReactComponent as DialBackground } from './assets/dialbackground.svg';
+import { ReactComponent as DialForeground } from './assets/dialforeground.svg';
 
 function round(value: number, step: number) {
   step || (step = 1.0);
@@ -96,10 +96,13 @@ const Knob: React.FC<KnobProps> = ({
   const stepDecimalPlaces = getDecimalPlaces(step);
   const [currVal, _setCurrVal] = useState(defaultVal);
 
-  const setCurrVal = (val: number) => {
-    _setCurrVal(val);
-    onChange(val);
-  };
+  const setCurrVal = useCallback(
+    (val: number) => {
+      _setCurrVal(val);
+      onChange(val);
+    },
+    [onChange]
+  );
 
   const [rotation, setRotation] = useState(
     convertValueToRotation(
@@ -145,7 +148,17 @@ const Knob: React.FC<KnobProps> = ({
         setCurrVal(newVal); // Set the new value
       }
     },
-    [isDragging, startY, startRotation, minVal, maxVal, sensitivity]
+    [
+      isDragging,
+      startY,
+      startRotation,
+      minVal,
+      maxVal,
+      sensitivity,
+      minRotationDeg,
+      setCurrVal,
+      step,
+    ]
   );
 
   const endDrag = useCallback(() => {
@@ -163,7 +176,7 @@ const Knob: React.FC<KnobProps> = ({
         maxRotationDeg
       )
     );
-  }, []);
+  }, [defaultVal, maxVal, minRotationDeg, minVal, setCurrVal]);
 
   // Add event listeners when dragging starts and remove them when it ends
   useEffect(() => {
@@ -205,16 +218,6 @@ const Knob: React.FC<KnobProps> = ({
           </div>
         </div>
         <span>{currVal.toFixed(stepDecimalPlaces)}</span>
-        {/* <input
-          type='range'
-          min={minRotationDeg}
-          max={maxRotationDeg}
-          value={rotation}
-          className='range m-5'
-          onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-            setRotation(Number(event.target.value));
-          }}
-        /> */}
       </div>
     </div>
   );

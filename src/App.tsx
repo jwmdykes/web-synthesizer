@@ -8,6 +8,7 @@ import React, {
 
 import Piano from './Piano';
 import ControlBoxHeader from './ControlBoxHeader';
+import OscillatorButton from './OscillatorButton';
 
 import {
   EnvelopeParams,
@@ -23,6 +24,10 @@ import ControlBox from './ControlBox';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
+
+import sineWave from './assets/wave-sine.png';
+import squareWave from './assets/wave-square.png';
+import triangleWave from './assets/wave-triangle.png';
 
 interface MIDIMessageEvent extends Event {
   data: Uint8Array;
@@ -102,10 +107,9 @@ function App() {
     }));
   };
 
-  const handleOscillatorTypeChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
-  ) => {
-    setOscillatorType(event.target.value as OscillatorTypes);
+  const handleOscillatorTypeChange = (type: OscillatorTypes) => {
+    console.log('changing type to:', type);
+    setOscillatorType(type);
   };
 
   const startEnvelope = useCallback(
@@ -146,7 +150,6 @@ function App() {
           oscillator: newOscillator,
           adsrGainNode: newAdsrGainNode,
         });
-        console.log(newNotes);
         return newNotes;
       });
     },
@@ -257,8 +260,6 @@ function App() {
 
   const [modalVisible, setModalVisibility] = useState(false);
   const toggleModalVisible = () => {
-    console.log('toggling visibility!');
-    console.log(`modalVisible: ${modalVisible}`);
     setModalVisibility((prevVisibility) => {
       return !prevVisibility;
     });
@@ -286,6 +287,15 @@ function App() {
                   </em>
                 </a>{' '}
               </p>
+              <p className='mb-4'>
+                Oscillator icons are created by{' '}
+                <a href='https://www.flaticon.com/authors/iconading'>
+                  <em className='not-italic text-primary-content hover:underline underline-offset-4'>
+                    iconading
+                  </em>
+                </a>{' '}
+              </p>
+
               <button className='btn' onClick={toggleModalVisible}>
                 Close
               </button>
@@ -316,16 +326,26 @@ function App() {
           <div className='px-6 grid grid-cols-2 gap-2'>
             <ControlBox>
               <ControlBoxHeader text='Oscillator Type'></ControlBoxHeader>
-              <select
-                className='select w-full max-w-xs'
-                value={oscillatorType}
-                onChange={handleOscillatorTypeChange}
-              >
-                <option value='sine'>sine</option>
-                <option value='square'>square</option>
-                <option value='triangle'>triangle</option>
-                <option value='sawtooth'>sawtooth</option>
-              </select>
+              <div className='flex items-center justify-between gap-4'>
+                <OscillatorButton
+                  text='Sine'
+                  src={sineWave}
+                  onChange={() => handleOscillatorTypeChange('sine')}
+                  selected={oscillatorType === 'sine'}
+                ></OscillatorButton>
+                <OscillatorButton
+                  src={squareWave}
+                  text='Square'
+                  onChange={() => handleOscillatorTypeChange('square')}
+                  selected={oscillatorType === 'square'}
+                ></OscillatorButton>
+                <OscillatorButton
+                  text='Triangle'
+                  src={triangleWave}
+                  onChange={() => handleOscillatorTypeChange('triangle')}
+                  selected={oscillatorType === 'triangle'}
+                ></OscillatorButton>
+              </div>
             </ControlBox>
 
             <ControlBox>
