@@ -6,21 +6,18 @@ import React, {
   MouseEventHandler,
 } from 'react';
 
-import Piano from './Piano';
-import ControlBoxHeader from './ControlBoxHeader';
-import OscillatorButton from './OscillatorButton';
+import Piano from './UIComponents/Piano';
+import ControlBoxHeader from './UIComponents/ControlBoxHeader';
+import OscillatorButton from './UIComponents/OscillatorButton';
 
 import {
-  EnvelopeParams,
-  createADSRNode,
   createOscillator,
-  OscillatorTypes,
-} from './Oscillator';
+} from './soundEngine/Oscillator';
 
-import { createFilterNode, filterParams, filterType } from './Filter';
+import { createFilterNode, FilterParams, FilterType } from './soundEngine/Filter';
 
-import SingleKnobControl from './SingleKnobControl';
-import ControlBox from './ControlBox';
+import SingleKnobControl from './UIComponents/SingleKnobControl';
+import ControlBox from './UIComponents/ControlBox';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faQuestion } from '@fortawesome/free-solid-svg-icons';
@@ -28,10 +25,7 @@ import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import sineWave from './assets/wave-sine.png';
 import squareWave from './assets/wave-square.png';
 import triangleWave from './assets/wave-triangle.png';
-
-interface MIDIMessageEvent extends Event {
-  data: Uint8Array;
-}
+import {createADSRNode, EnvelopeParams} from "./soundEngine/Envelope";
 
 function App() {
   const audioContext = useRef<AudioContext | null>(null);
@@ -42,14 +36,13 @@ function App() {
     sustain: 0.5,
     release: 0.3,
   });
-  const [filterParams, setFilterParams] = useState<filterParams>({
+  const [filterParams, setFilterParams] = useState<FilterParams>({
     type: 'lowpass',
     frequency: 350,
     Q: 1,
   });
-  const [oscillatorType, setOscillatorType] = useState<OscillatorTypes>('sine');
+  const [oscillatorType, setOscillatorType] = useState<OscillatorType>('sine');
 
-  const midiInputs = useRef<Set<WebMidi.MIDIInput>>(new Set());
   const [activeNotes, setActiveNotes] = useState<
     Map<number, { oscillator: OscillatorNode; adsrGainNode: GainNode }>
   >(new Map());
@@ -72,7 +65,7 @@ function App() {
     }));
   };
 
-  const handleFilterTypeChange = (val: filterType) => {
+  const handleFilterTypeChange = (val: FilterType) => {
     setFilterParams((prevState) => ({
       ...prevState,
       type: val,
@@ -107,7 +100,7 @@ function App() {
     }));
   };
 
-  const handleOscillatorTypeChange = (type: OscillatorTypes) => {
+  const handleOscillatorTypeChange = (type: OscillatorType) => {
     console.log('changing type to:', type);
     setOscillatorType(type);
   };
@@ -197,64 +190,6 @@ function App() {
     const AudioContext = window.AudioContext;
     audioContext.current = new AudioContext();
   }, []);
-
-  // Function to handle incoming MIDI messages
-  const handleMIDIMessage = useCallback(
-    (event: Event) => {
-      const message = event as MIDIMessageEvent;
-      const [status, note, velocity] = message.data;
-
-      // MIDI "note on" message
-      if (status === 144) {
-        startEnvelope(note, velocity / 127);
-      }
-
-      // MIDI "note off" message
-      else if (status === 128) {
-        endEnvelope(note);
-      }
-    },
-    [startEnvelope, endEnvelope]
-  );
-
-  // Function to initialize the MIDI API
-  const initializeMIDI = useCallback(async () => {
-    if (!navigator.requestMIDIAccess) {
-      console.log('WebMIDI is not supported in this browser.');
-      return;
-    }
-
-    const midiAccess: WebMidi.MIDIAccess = await navigator.requestMIDIAccess();
-
-    midiInputs.current.forEach((input) => {
-      input.onmidimessage = () => {};
-    });
-
-    // Listen for MIDI messages on all inputs
-    for (let input of midiAccess.inputs.values()) {
-      input.onmidimessage = handleMIDIMessage;
-
-      // Only add the input to the state if it's not already there
-
-      const prevInputs = midiInputs.current;
-      if (!prevInputs.has(input)) {
-        const newMidiInputs = new Set(prevInputs);
-        newMidiInputs.add(input);
-        midiInputs.current = newMidiInputs;
-      }
-    }
-  }, [handleMIDIMessage]);
-
-  // Call the initializeMIDI function when the component mounts
-  // useEffect(() => {
-  //   console.log('doing midi')
-  //   initializeMIDI();
-  //   return () => {
-  //     midiInputs.current.forEach((input) => {
-  //       input.onmidimessage = () => { };
-  //     });
-  //   };
-  // }, [initializeMIDI]);
 
   const pianoHeight = 180;
 

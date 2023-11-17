@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, MouseEventHandler } from 'react';
-import { ReactComponent as DialBackground } from './assets/dialbackground.svg';
-import { ReactComponent as DialForeground } from './assets/dialforeground.svg';
+import { ReactComponent as DialBackground } from '../assets/dialbackground.svg';
+import { ReactComponent as DialForeground } from '../assets/dialforeground.svg';
 
 function round(value: number, step: number) {
   step || (step = 1.0);
