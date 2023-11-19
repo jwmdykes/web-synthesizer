@@ -34,30 +34,24 @@ export class Envelope {
         this.node.connect(parentNode);
     }
 
-    public attach(node: AudioNode) {
-        node.connect(this.node);
-    }
-
     public play() {
-        const maxGain = 1;
+        const maxGain = 0.5;
         const sustainGain = maxGain * this.sustainLevel; // should be a parameter
 
         // Set initial value
-        this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime);
-        this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime + 0.001);
+        this.node.gain.setTargetAtTime(this.node.gain.value, this.audioContext.currentTime, 0.0001);
+        this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime + 0.0002);
 
         // Attack
-        this.node.gain.linearRampToValueAtTime(maxGain, this.audioContext.currentTime + this.attack + 0.001);
+        this.node.gain.linearRampToValueAtTime(maxGain, this.audioContext.currentTime + this.attack + 0.0002);
         // Decay
-        this.node.gain.linearRampToValueAtTime(sustainGain, this.audioContext.currentTime + this.attack + this.decay + 0.001);
+        this.node.gain.linearRampToValueAtTime(sustainGain, this.audioContext.currentTime + this.attack + this.decay + 0.0002);
     }
 
 
     // performs the usual release callback after stopping the note
     public stop() {
-        this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime);
-        this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime + 0.001);
+        this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime);
         this.node.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + this.release);
     }
-
 }
