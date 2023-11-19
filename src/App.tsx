@@ -39,24 +39,36 @@ function App() {
     };
 
     const handleFilterFrequencyChange = (val: number) => {
-        setFilterParams((prevState) => ({
-            ...prevState,
-            frequency: val,
-        }));
+        setFilterParams((prevState) => {
+            let newState : FilterParams = {
+                ...prevState,
+                frequency: val,
+            }
+            soundEngine.current?.changeFilterParams(newState);
+            return newState
+        });
     };
 
     const handleFilterQChange = (val: number) => {
-        setFilterParams((prevState) => ({
-            ...prevState,
-            Q: val,
-        }));
+        setFilterParams((prevState) => {
+            let newState : FilterParams = {
+                ...prevState,
+                Q: val,
+            }
+            soundEngine.current?.changeFilterParams(newState);
+            return newState
+        });
     };
 
     const handleFilterTypeChange = (val: FilterType) => {
-        setFilterParams((prevState) => ({
-            ...prevState,
-            type: val,
-        }));
+        setFilterParams((prevState) => {
+            let newState : FilterParams = {
+                ...prevState,
+                type: val,
+            }
+            soundEngine.current?.changeFilterParams(newState);
+            return newState
+        });
     };
 
     const handleAttackChange = (val: number) => {

@@ -1,5 +1,6 @@
 import {Voice, VoiceParams} from "./Voice";
 import {EnvelopeParams} from "./Envelope";
+import {FilterParams} from "./Filter";
 
 export interface SoundEngineParams {
     midiVoices: number[],
@@ -24,6 +25,16 @@ export class SoundEngine {
         for (let [_, value] of this.voices)
         {
             value.changeEnvelopeParams(envelopeParams);
+        }
+    }
+
+    public changeFilterParams(filterParams: FilterParams)
+    {
+        console.log("MODIFYING FILTER PARAMS:")
+        console.log(filterParams)
+        for (let [_, value] of this.voices)
+        {
+            value.changeFilterParams(filterParams);
         }
     }
 

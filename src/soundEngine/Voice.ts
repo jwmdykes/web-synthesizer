@@ -1,4 +1,4 @@
-import {createFilterNode, FilterParams} from "./Filter";
+import {Filter, FilterParams} from "./Filter";
 import {Envelope, EnvelopeParams} from "./Envelope";
 import {createOscillator} from "./Oscillator";
 import {midiNoteToFrequency} from "./Tunings";
@@ -13,8 +13,9 @@ export class Voice {
 
     private readonly audioContext: AudioContext;
     private oscillator?: OscillatorNode;
+    private oscillatorOutput: AudioNode;
     private readonly envelope: Envelope;
-    // private readonly filter: BiquadFilterNode;
+    private readonly filter: Filter;
     private crossfadeGain?: GainNode;
     private params: VoiceParams;
 
@@ -35,13 +36,18 @@ export class Voice {
         }
     }
 
+    public changeFilterParams(filterParams: FilterParams)
+    {
+        this.filter.changeFilterParams(filterParams);
+    }
+
     constructor(audioContext: AudioContext, parentNode: AudioNode, params: VoiceParams) {
         this.params = params;
         this.audioContext = audioContext;
 
-        this.envelope = new Envelope(audioContext, parentNode, params.envelopeParams);
-        // this.filter = createFilterNode(audioContext, params.filterParams);
-        // this.filter.connect(parentNode);
+        this.filter = new Filter(this.audioContext, parentNode, this.params.filterParams);
+        this.envelope = new Envelope(audioContext, this.filter.node, params.envelopeParams);
+        this.oscillatorOutput = this.envelope.node;
     }
 
     private createOscillator(noteNumber: number)
@@ -53,7 +59,7 @@ export class Voice {
         });
 
         newOscillator.connect(crossfadeGain);
-        crossfadeGain.connect(this.envelope.node);
+        crossfadeGain.connect(this.oscillatorOutput);
         newOscillator.start();
 
         return {
@@ -76,8 +82,6 @@ export class Voice {
         }
         else
         {
-            // crossfade between new and old oscillator
-            console.log("DISCONNECTING OLD OSCILLATOR!")
             this.crossfadeGain?.gain.cancelAndHoldAtTime(this.audioContext.currentTime);
             this.crossfadeGain?.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + crossfadeTime);
             newOscillator.crossfadeGain.gain.cancelAndHoldAtTime(this.audioContext.currentTime);
