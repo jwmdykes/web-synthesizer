@@ -16,6 +16,23 @@ export class Voice {
     // private readonly filter: BiquadFilterNode;
     private params: VoiceParams;
 
+    public changeEnvelopeParams(envelopeParams: EnvelopeParams)
+    {
+        this.envelope.attack = envelopeParams.attack;
+        this.envelope.sustain = envelopeParams.sustain;
+        this.envelope.sustainLevel = envelopeParams.sustainLevel;
+        this.envelope.decay = envelopeParams.decay;
+        this.envelope.release = envelopeParams.release;
+    }
+
+    public changeOscillatorParams(oscillatorParams: OscillatorType)
+    {
+        this.params = {
+            ...this.params,
+            oscillatorParams: oscillatorParams,
+        }
+    }
+
     constructor(audioContext: AudioContext, parentNode: AudioNode, params: VoiceParams) {
         this.params = params;
         this.audioContext = audioContext;

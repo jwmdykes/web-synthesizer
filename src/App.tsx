@@ -24,22 +24,15 @@ import {EnvelopeParams} from "./soundEngine/Envelope";
 import {SoundEngine} from "./soundEngine/SoundEngine";
 import {VoiceParams} from "./soundEngine/Voice";
 
+import defaultParams from "./SynthPresets/default"
+
+
 function App() {
     const soundEngine: MutableRefObject<SoundEngine | null> = useRef(null);
     const [volume, setVolume] = useState(50);
-    const [envelopeParams, setEnvelopeParams] = useState<EnvelopeParams>({
-        attack: 0.1,
-        decay: 0.6,
-        sustain: 1,
-        release: 2,
-        sustainLevel: 0.4,
-    });
-    const [filterParams, setFilterParams] = useState<FilterParams>({
-        type: 'lowpass',
-        frequency: 350,
-        Q: 1,
-    });
-    const [oscillatorType, setOscillatorType] = useState<OscillatorType>('square');
+    const [envelopeParams, setEnvelopeParams] = useState<EnvelopeParams>(defaultParams.envelopeParams);
+    const [filterParams, setFilterParams] = useState<FilterParams>(defaultParams.filterParams);
+    const [oscillatorType, setOscillatorType] = useState<OscillatorType>(defaultParams.oscillatorParams);
 
     const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setVolume(Number(event.target.value));
@@ -67,34 +60,51 @@ function App() {
     };
 
     const handleAttackChange = (val: number) => {
-        setEnvelopeParams((prevState) => ({
-            ...prevState,
-            attack: val,
-        }));
+        setEnvelopeParams((prevState) => {
+            let newState : EnvelopeParams = {
+                ...prevState,
+                attack: Number(val)
+            }
+            soundEngine.current?.changeEnvelopeParams(newState);
+            return newState
+        });
     };
 
     const handleDecayChange = (val: number) => {
-        setEnvelopeParams((prevState) => ({
-            ...prevState,
-            decay: Number(val),
-        }));
+        setEnvelopeParams((prevState) => {
+            let newState : EnvelopeParams = {
+                ...prevState,
+                decay: Number(val)
+            }
+            soundEngine.current?.changeEnvelopeParams(newState);
+            return newState
+        });
     };
 
     const handleSustainChange = (val: number) => {
-        setEnvelopeParams((prevState) => ({
-            ...prevState,
-            sustain: Number(val),
-        }));
+        setEnvelopeParams((prevState) => {
+            let newState : EnvelopeParams = {
+                ...prevState,
+                sustain: Number(val)
+            }
+            soundEngine.current?.changeEnvelopeParams(newState);
+            return newState
+        });
     };
 
     const handleReleaseChange = (val: number) => {
-        setEnvelopeParams((prevState) => ({
-            ...prevState,
-            release: Number(val),
-        }));
+        setEnvelopeParams((prevState) => {
+            let newState : EnvelopeParams = {
+                ...prevState,
+                release: Number(val)
+            }
+            soundEngine.current?.changeEnvelopeParams(newState);
+            return newState
+        });
     };
 
     const handleOscillatorTypeChange = (type: OscillatorType) => {
+        soundEngine.current?.changeOscillatorParams(type);
         setOscillatorType(type);
     };
 
@@ -222,7 +232,7 @@ function App() {
                             <div className='flex gap-6'>
                                 <SingleKnobControl
                                     text='Attack'
-                                    defaultVal={0.01}
+                                    defaultVal={defaultParams.envelopeParams.attack}
                                     minVal={0.01}
                                     maxVal={1}
                                     step={0.01}
@@ -231,7 +241,7 @@ function App() {
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Decay'
-                                    defaultVal={0.01}
+                                    defaultVal={defaultParams.envelopeParams.decay}
                                     minVal={0.01}
                                     maxVal={1}
                                     step={0.01}
@@ -240,7 +250,7 @@ function App() {
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Sustain'
-                                    defaultVal={0.01}
+                                    defaultVal={defaultParams.envelopeParams.sustain}
                                     minVal={0.01}
                                     maxVal={1}
                                     step={0.01}
@@ -249,7 +259,7 @@ function App() {
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Release'
-                                    defaultVal={0.01}
+                                    defaultVal={defaultParams.envelopeParams.release}
                                     minVal={0.01}
                                     maxVal={1}
                                     step={0.01}
@@ -264,7 +274,7 @@ function App() {
                             <div className='flex gap-6'>
                                 <SingleKnobControl
                                     text='Freq'
-                                    defaultVal={350}
+                                    defaultVal={defaultParams.filterParams.frequency}
                                     minVal={20}
                                     maxVal={2000}
                                     step={5}
@@ -273,7 +283,7 @@ function App() {
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Resonance'
-                                    defaultVal={1}
+                                    defaultVal={defaultParams.filterParams.Q}
                                     minVal={0.1}
                                     maxVal={10}
                                     step={0.1}
