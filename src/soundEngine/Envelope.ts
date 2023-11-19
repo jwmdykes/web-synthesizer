@@ -1,5 +1,3 @@
-import {createOscillator} from "./Oscillator";
-
 export type EnvelopeParams = {
     attack: number;
     decay: number;
@@ -9,8 +7,6 @@ export type EnvelopeParams = {
 }
 
 export class Envelope {
-    static readonly minimumStopTime = 0.01;
-
     public attack: number;
     public decay: number;
     public sustain: number;
@@ -18,12 +14,6 @@ export class Envelope {
     public sustainLevel: number;
     public readonly node: GainNode;
     private audioContext: AudioContext;
-    private active: boolean;
-
-    public IsActive()
-    {
-        return this.active;
-    }
 
     constructor(audioContext: AudioContext, parentNode: AudioNode, {
         attack,
@@ -37,9 +27,6 @@ export class Envelope {
         this.sustain = sustain;
         this.release = release;
         this.sustainLevel = sustainLevel;
-
-        this.active = false;
-
         this.audioContext = audioContext;
         this.node = new GainNode(audioContext, {
             gain: 0,

@@ -101,13 +101,14 @@ function App() {
     // setup sound engine class
     useEffect(() => {
         const audioContext = new AudioContext();
+        const midiVoices =Array(13).fill(0).map((_, i) => i+60) ;
         const voiceParams: VoiceParams = {
             filterParams: filterParams,
             envelopeParams: envelopeParams,
             oscillatorParams: oscillatorType,
         }
         soundEngine.current = new SoundEngine(audioContext, {
-            numVoices: 16,
+            midiVoices: midiVoices,
             voiceParams: voiceParams
         })
     }, []);
