@@ -6,7 +6,7 @@ export interface FilterParams {
     frequency: number,
 }
 
-export function createFilterNode(audioContext: AudioContext, { type, Q, frequency }: FilterParams) {
+export function createFilterNode(audioContext: AudioContext, {type, Q, frequency}: FilterParams) {
     const filterNode = audioContext.createBiquadFilter();
     filterNode.type = type;
     filterNode.frequency.value = frequency;

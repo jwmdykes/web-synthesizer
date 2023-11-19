@@ -7,8 +7,7 @@ export type EnvelopeParams = {
     release: number;
 }
 
-export class Envelope
-{
+export class Envelope {
     static readonly minimumStopTime = 0.01;
 
     public attack: number;
@@ -24,8 +23,7 @@ export class Envelope
         decay,
         sustain,
         release
-    } : EnvelopeParams)
-    {
+    }: EnvelopeParams) {
         this.attack = attack;
         this.decay = decay;
         this.sustain = sustain;
@@ -38,9 +36,8 @@ export class Envelope
         this.node.connect(parentNode);
     }
 
-    public attach(node: AudioNode)
-    {
-       node.connect(this.node);
+    public attach(node: AudioNode) {
+        node.connect(this.node);
     }
 
     public play() {

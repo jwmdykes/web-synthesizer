@@ -14,11 +14,10 @@ export class Voice {
     private oscillator?: OscillatorNode;
     private readonly envelope: Envelope;
     // private readonly filter: BiquadFilterNode;
-    private activeNote : number | null;
+    private activeNote: number | null;
     private params: VoiceParams;
 
-    public getActiveNote()
-    {
+    public getActiveNote() {
         return this.activeNote
     }
 
@@ -33,26 +32,17 @@ export class Voice {
         // this.filter.connect(parentNode);
     }
 
-    private createOscillator(noteNumber: number)
-    {
-        this.oscillator?.stop()
+    private createOscillator(noteNumber: number) {
         this.oscillator?.disconnect();
 
-        if (this.oscillator != null)
-        {
-            this.envelope.attach(this.oscillator);
-        }
         this.oscillator = createOscillator(this.audioContext, this.params.oscillatorParams, noteNumber)
+        this.envelope.attach(this.oscillator);
     }
 
     public play(noteNumber: number) {
-        this.oscillator?.disconnect();
-        this.oscillator = createOscillator(this.audioContext, this.params.oscillatorParams, noteNumber);
-        this.oscillator.connect(this.envelope.node);
-        this.oscillator.start();
+        this.createOscillator(noteNumber);
+        this.oscillator?.start();
 
-        // this.createOscillator(noteNumber);
-        // this.oscillator?.start();
         this.activeNote = noteNumber;
         this.envelope.play();
     }
