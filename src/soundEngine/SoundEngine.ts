@@ -12,6 +12,11 @@ export class SoundEngine {
     private readonly audioContext: AudioContext;
     private readonly masterVolume: GainNode;
 
+    public setVolume(volume: number)
+    {
+        this.masterVolume.gain.setValueAtTime(volume, this.audioContext.currentTime);
+    }
+
     public changeOscillatorParams(oscillatorParams: OscillatorType)
     {
         for (let [_, value] of this.voices)

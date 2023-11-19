@@ -36,6 +36,7 @@ function App() {
 
     const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setVolume(Number(event.target.value));
+        soundEngine.current?.setVolume(Number(event.target.value) / 100);
     };
 
     const handleFilterFrequencyChange = (val: number) => {
