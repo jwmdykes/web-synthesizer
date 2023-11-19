@@ -5,6 +5,7 @@ export type EnvelopeParams = {
     decay: number;
     sustain: number;
     release: number;
+    sustainLevel: number;
 }
 
 export class Envelope {
@@ -14,20 +15,30 @@ export class Envelope {
     public decay: number;
     public sustain: number;
     public release: number;
+    public sustainLevel: number;
     public readonly node: GainNode;
     private audioContext: AudioContext;
-    private oscillator?: OscillatorNode;
+    private active: boolean;
+
+    public IsActive()
+    {
+        return this.active;
+    }
 
     constructor(audioContext: AudioContext, parentNode: AudioNode, {
         attack,
         decay,
         sustain,
-        release
+        release,
+        sustainLevel,
     }: EnvelopeParams) {
         this.attack = attack;
         this.decay = decay;
         this.sustain = sustain;
         this.release = release;
+        this.sustainLevel = sustainLevel;
+
+        this.active = false;
 
         this.audioContext = audioContext;
         this.node = new GainNode(audioContext, {
@@ -42,7 +53,7 @@ export class Envelope {
 
     public play() {
         const maxGain = 1;
-        const sustainGain = maxGain * 0.5; // should be a parameter
+        const sustainGain = maxGain * this.sustainLevel; // should be a parameter
 
         // Set initial value
         this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime);
@@ -57,8 +68,6 @@ export class Envelope {
 
     // performs the usual release callback after stopping the note
     public stop() {
-        console.log(`STOPPING! Releasing with time: ${this.release}`);
-        console.log(`current gain: ${this.node.gain.value}`);
         this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime);
         this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime + 0.001);
         this.node.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + this.release);

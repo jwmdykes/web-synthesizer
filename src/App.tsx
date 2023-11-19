@@ -28,10 +28,11 @@ function App() {
     const soundEngine: MutableRefObject<SoundEngine | null> = useRef(null);
     const [volume, setVolume] = useState(50);
     const [envelopeParams, setEnvelopeParams] = useState<EnvelopeParams>({
-        attack: 0.8,
-        decay: 1,
-        sustain: 2,
-        release: 1.5,
+        attack: 0.1,
+        decay: 0.6,
+        sustain: 1,
+        release: 2,
+        sustainLevel: 0.4,
     });
     const [filterParams, setFilterParams] = useState<FilterParams>({
         type: 'lowpass',
