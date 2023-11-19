@@ -75,6 +75,7 @@ export default function Piano(props: {
                   key !== 'E' &&
                   index !== whiteKeys.length - 1 ? (
                     <BlackKey
+                      key={key + '#'}
                       letter={key + '#'}
                       mouseDownCallback={props.mouseDownCallbackCreator(
                         midiNumber + 1

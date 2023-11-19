@@ -2,19 +2,14 @@ import React, {
   useEffect,
   useRef,
   useState,
-  useCallback,
-  MouseEventHandler,
+  MouseEventHandler, MutableRefObject,
 } from 'react';
 
 import Piano from './UIComponents/Piano';
 import ControlBoxHeader from './UIComponents/ControlBoxHeader';
 import OscillatorButton from './UIComponents/OscillatorButton';
 
-import {
-  createOscillator,
-} from './soundEngine/Oscillator';
-
-import { createFilterNode, FilterParams, FilterType } from './soundEngine/Filter';
+import { FilterParams, FilterType } from './soundEngine/Filter';
 
 import SingleKnobControl from './UIComponents/SingleKnobControl';
 import ControlBox from './UIComponents/ControlBox';
@@ -25,27 +20,25 @@ import { faQuestion } from '@fortawesome/free-solid-svg-icons';
 import sineWave from './assets/wave-sine.png';
 import squareWave from './assets/wave-square.png';
 import triangleWave from './assets/wave-triangle.png';
-import {createADSRNode, EnvelopeParams} from "./soundEngine/Envelope";
+import {EnvelopeParams} from "./soundEngine/Envelope";
+import {SoundEngine} from "./soundEngine/SoundEngine";
+import {VoiceParams} from "./soundEngine/Voice";
 
 function App() {
-  const audioContext = useRef<AudioContext | null>(null);
+  const soundEngine : MutableRefObject<SoundEngine | null> = useRef(null);
   const [volume, setVolume] = useState(50);
   const [envelopeParams, setEnvelopeParams] = useState<EnvelopeParams>({
-    attack: 0.1,
-    decay: 0.2,
-    sustain: 0.5,
-    release: 0.3,
+    attack: 0.8,
+    decay: 1,
+    sustain: 2,
+    release: 1.5,
   });
   const [filterParams, setFilterParams] = useState<FilterParams>({
     type: 'lowpass',
     frequency: 350,
     Q: 1,
   });
-  const [oscillatorType, setOscillatorType] = useState<OscillatorType>('sine');
-
-  const [activeNotes, setActiveNotes] = useState<
-    Map<number, { oscillator: OscillatorNode; adsrGainNode: GainNode }>
-  >(new Map());
+  const [oscillatorType, setOscillatorType] = useState<OscillatorType>('square');
 
   const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setVolume(Number(event.target.value));
@@ -101,94 +94,21 @@ function App() {
   };
 
   const handleOscillatorTypeChange = (type: OscillatorType) => {
-    console.log('changing type to:', type);
     setOscillatorType(type);
   };
 
-  const startEnvelope = useCallback(
-    (noteNumber: number, velocity: number) => {
-      if (audioContext.current === null) {
-        return;
-      }
-
-      const newOscillator = createOscillator(
-        audioContext.current,
-        oscillatorType,
-        noteNumber
-      );
-      const newAdsrGainNode = createADSRNode(
-        audioContext.current,
-        envelopeParams
-      );
-      const newFilterNode = createFilterNode(
-        audioContext.current,
-        filterParams
-      );
-      const globalVolume = audioContext.current.createGain();
-
-      const scaledVelocity = Math.pow(velocity, 1.5);
-      // const scaledVelocity = Math.log(1 + velocity / 127);
-
-      globalVolume.gain.value = (volume / 100) * scaledVelocity; // Set the global volume
-
-      globalVolume.connect(audioContext.current.destination);
-      newFilterNode.connect(globalVolume);
-      newAdsrGainNode.connect(newFilterNode);
-      newOscillator.connect(newAdsrGainNode);
-      newOscillator.start();
-
-      setActiveNotes((prevNotes) => {
-        const newNotes = new Map(prevNotes);
-        newNotes.set(noteNumber, {
-          oscillator: newOscillator,
-          adsrGainNode: newAdsrGainNode,
-        });
-        return newNotes;
-      });
-    },
-    [audioContext, oscillatorType, envelopeParams, volume, filterParams]
-  );
-
-  // Function to end the envelope
-  const endEnvelope = useCallback(
-    (noteNumber: number) => {
-      setActiveNotes((prevNotes) => {
-        if (!audioContext.current) {
-          return prevNotes;
-        }
-
-        const newNotes = new Map(prevNotes);
-        const note = newNotes.get(noteNumber);
-
-        if (note) {
-          note.adsrGainNode.gain.setValueAtTime(
-            note.adsrGainNode.gain.value,
-            audioContext.current.currentTime
-          ); // Set the current gain immediately
-          note.adsrGainNode.gain.exponentialRampToValueAtTime(
-            0.00001,
-            audioContext.current.currentTime + envelopeParams.release
-          ); // Exponential release phase
-
-          // Optionally, stop and disconnect the oscillator after the release phase is done
-          setTimeout(() => {
-            note.oscillator.stop();
-            note.oscillator.disconnect();
-            note.adsrGainNode.disconnect();
-          }, envelopeParams.release * 1000); // setTimeout uses milliseconds
-
-          newNotes.delete(noteNumber);
-        }
-
-        return newNotes;
-      });
-    },
-    [audioContext, envelopeParams.release]
-  );
-
+  // setup sound engine class
   useEffect(() => {
-    const AudioContext = window.AudioContext;
-    audioContext.current = new AudioContext();
+    const audioContext = new AudioContext();
+    const voiceParams: VoiceParams = {
+      filterParams: filterParams,
+      envelopeParams: envelopeParams,
+      oscillatorParams: oscillatorType,
+    }
+    soundEngine.current = new SoundEngine(audioContext, {
+      numVoices: 16,
+      voiceParams: voiceParams
+    })
   }, []);
 
   const pianoHeight = 180;
@@ -379,7 +299,7 @@ function App() {
               const callback: MouseEventHandler = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                startEnvelope(note, 0.7);
+                soundEngine.current?.play(note);
               };
               return callback;
             }}
@@ -387,7 +307,7 @@ function App() {
               const callback: MouseEventHandler = (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                activeNotes.forEach((_, note) => endEnvelope(note));
+                soundEngine.current?.stop(note);
               };
               return callback;
             }}

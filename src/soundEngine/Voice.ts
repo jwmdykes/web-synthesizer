@@ -1,7 +1,6 @@
 import {createFilterNode, FilterParams} from "./Filter";
-import {createADSRNode, EnvelopeParams} from "./Envelope";
+import {Envelope, EnvelopeParams} from "./Envelope";
 import {createOscillator} from "./Oscillator";
-import {midiNoteToFrequency} from "./Tunings";
 
 export interface VoiceParams {
     filterParams: FilterParams,
@@ -10,29 +9,56 @@ export interface VoiceParams {
 }
 
 export class Voice {
+
     private readonly audioContext: AudioContext;
-    private readonly oscillator: OscillatorNode;
-    private readonly envelope: GainNode;
-    private readonly filter: BiquadFilterNode;
+    private oscillator?: OscillatorNode;
+    private readonly envelope: Envelope;
+    // private readonly filter: BiquadFilterNode;
+    private activeNote : number | null;
+    private params: VoiceParams;
 
-    public headNode: AudioNode;
+    public getActiveNote()
+    {
+        return this.activeNote
+    }
 
-    constructor(audioContext: AudioContext, params: VoiceParams) {
+    constructor(audioContext: AudioContext, parentNode: AudioNode, params: VoiceParams) {
+        this.params = params;
+        this.activeNote = null;
         this.audioContext = audioContext;
-        this.oscillator = createOscillator(audioContext, params.oscillatorParams, 0);
-        this.envelope = createADSRNode(audioContext, params.envelopeParams);
-        this.headNode = this.filter = createFilterNode(audioContext, params.filterParams);
 
-        this.oscillator.connect(this.envelope);
-        this.envelope.connect(this.filter);
+        this.envelope = new Envelope(audioContext, parentNode, params.envelopeParams);
+        // this.filter = createFilterNode(audioContext, params.filterParams);
+        this.envelope.node.connect(parentNode);
+        // this.filter.connect(parentNode);
     }
 
-    play(noteNumber: number) {
-        this.oscillator.frequency.setValueAtTime(midiNoteToFrequency(noteNumber), this.audioContext.currentTime);
+    private createOscillator(noteNumber: number)
+    {
+        this.oscillator?.stop()
+        this.oscillator?.disconnect();
+
+        if (this.oscillator != null)
+        {
+            this.envelope.attach(this.oscillator);
+        }
+        this.oscillator = createOscillator(this.audioContext, this.params.oscillatorParams, noteNumber)
+    }
+
+    public play(noteNumber: number) {
+        this.oscillator?.disconnect();
+        this.oscillator = createOscillator(this.audioContext, this.params.oscillatorParams, noteNumber);
+        this.oscillator.connect(this.envelope.node);
         this.oscillator.start();
+
+        // this.createOscillator(noteNumber);
+        // this.oscillator?.start();
+        this.activeNote = noteNumber;
+        this.envelope.play();
     }
 
-    stop() {
-
+    public stop() {
+        this.envelope.stop();
+        this.activeNote = null;
     }
 }
