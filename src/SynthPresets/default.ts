@@ -22,5 +22,6 @@ export default {
     envelopeParams: envelopeParams,
     filterParams: filterParams,
     oscillatorParams: oscillatorParams,
+    volume: 50,
 }
 

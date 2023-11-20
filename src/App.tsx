@@ -33,7 +33,7 @@ import keyMap from "./SynthPresets/hotkeys";
 
 function App() {
     const soundEngine: MutableRefObject<SoundEngine | null> = useRef(null);
-    const [volume, setVolume] = useState(50);
+    const [volume, setVolume] = useState(defaultParams.volume);
     const [envelopeParams, setEnvelopeParams] = useState<EnvelopeParams>(defaultParams.envelopeParams);
     const [filterParams, setFilterParams] = useState<FilterParams>(defaultParams.filterParams);
     const [oscillatorType, setOscillatorType] = useState<OscillatorType>(defaultParams.oscillatorParams);
@@ -104,7 +104,8 @@ function App() {
         }
         soundEngine.current = new SoundEngine(audioContext, {
             midiVoices: midiVoices,
-            voiceParams: voiceParams
+            voiceParams: voiceParams,
+            volume: volume/100
         })
     }, []);
 

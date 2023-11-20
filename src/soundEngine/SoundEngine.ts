@@ -5,12 +5,14 @@ import {FilterParams} from "./Filter";
 export interface SoundEngineParams {
     midiVoices: number[],
     voiceParams: VoiceParams,
+    volume: number,
 }
 
 export class SoundEngine {
     private readonly voices: Map<number, Voice>;
     private readonly audioContext: AudioContext;
     private readonly masterVolume: GainNode;
+    private readonly mixCompressor: DynamicsCompressorNode;
 
     public setVolume(volume: number)
     {
@@ -44,16 +46,19 @@ export class SoundEngine {
     }
 
     constructor(audioContext: AudioContext, params: SoundEngineParams) {
+        this.mixCompressor = audioContext.createDynamicsCompressor();
+        this.mixCompressor.ratio.setValueAtTime(4, audioContext.currentTime)
         this.masterVolume = audioContext.createGain();
+        this.mixCompressor.connect(this.masterVolume);
         this.masterVolume.connect(audioContext.destination);
-        this.masterVolume.gain.value = 1;
+        this.masterVolume.gain.value = params.volume;
 
         this.audioContext = audioContext;
 
         this.voices = new Map<number, Voice>;
         for (let i of params.midiVoices)
         {
-            this.voices.set(i, new Voice(this.audioContext, this.masterVolume, params.voiceParams));
+            this.voices.set(i, new Voice(this.audioContext, this.mixCompressor, params.voiceParams));
         }
     }
 
