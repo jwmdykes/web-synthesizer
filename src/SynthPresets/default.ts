@@ -6,13 +6,15 @@ const envelopeParams: EnvelopeParams = {
     decay: 0.8,
     sustain: 1,
     release: 2,
-    sustainLevel: 0.2,
 }
 
 const filterParams: FilterParams = {
     type: 'lowpass',
     frequency: 350,
     Q: 1,
+    LFOFrequency: 1,
+    LFOBypass: false,
+    LFOOscillation: 400,
 }
 
 const oscillatorParams: OscillatorType = "sine"

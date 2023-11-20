@@ -24,7 +24,6 @@ export class Voice {
     {
         this.envelope.attack = envelopeParams.attack;
         this.envelope.sustain = envelopeParams.sustain;
-        this.envelope.sustainLevel = envelopeParams.sustainLevel;
         this.envelope.decay = envelopeParams.decay;
         this.envelope.release = envelopeParams.release;
     }

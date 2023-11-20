@@ -3,7 +3,6 @@ export type EnvelopeParams = {
     decay: number;
     sustain: number;
     release: number;
-    sustainLevel: number;
 }
 
 export class Envelope {
@@ -11,7 +10,6 @@ export class Envelope {
     public decay: number;
     public sustain: number;
     public release: number;
-    public sustainLevel: number;
     public readonly node: GainNode;
     private audioContext: AudioContext;
 
@@ -20,13 +18,11 @@ export class Envelope {
         decay,
         sustain,
         release,
-        sustainLevel,
     }: EnvelopeParams) {
         this.attack = attack;
         this.decay = decay;
         this.sustain = sustain;
         this.release = release;
-        this.sustainLevel = sustainLevel;
         this.audioContext = audioContext;
         this.node = new GainNode(audioContext, {
             gain: 0,
@@ -43,7 +39,7 @@ export class Envelope {
         // Attack
         this.node.gain.linearRampToValueAtTime(1, this.audioContext.currentTime + this.attack);
         // Decay
-        this.node.gain.linearRampToValueAtTime(this.sustainLevel, this.audioContext.currentTime + this.attack + this.decay);
+        this.node.gain.linearRampToValueAtTime(this.sustain, this.audioContext.currentTime + this.attack + this.decay);
     }
 
 
@@ -54,7 +50,7 @@ export class Envelope {
         console.log(`RELEASE: ${this.release}`)
         // this.node.gain.cancelScheduledValues(this.audioContext.currentTime);
         // this.node.gain.setValueAtTime(this.sustainLevel, this.audioContext.currentTime)
-        console.log(`sustain: ${this.sustainLevel}`)
+        console.log(`sustain: ${this.sustain}`)
 
         this.node.gain.cancelScheduledValues(this.audioContext.currentTime)
         this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime)

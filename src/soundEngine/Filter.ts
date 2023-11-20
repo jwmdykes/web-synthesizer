@@ -1,4 +1,4 @@
-import {TunaAudioNode} from "tunajs";
+import Tuna, {TunaAudioNode} from "tunajs";
 
 export type FilterType = 'lowpass' | 'highpass' | 'bandpass' | 'notch';
 
@@ -6,6 +6,9 @@ export interface FilterParams {
     type: FilterType,
     Q: number,
     frequency: number,
+    LFOBypass: boolean,
+    LFOFrequency: number,
+    LFOOscillation: number,
 }
 
 export class Filter {
@@ -13,14 +16,19 @@ export class Filter {
     public Q: number;
     public frequency: number;
     public node: BiquadFilterNode;
+    public LFO: Tuna.TunaAudioNode;
 
+    private tuna: Tuna
     private audioContext: AudioContext;
     private parentNode: AudioNode | TunaAudioNode;
 
     constructor(audioContext: AudioContext, parentNode: AudioNode | TunaAudioNode, {
         type,
         Q,
-        frequency
+        frequency,
+        LFOBypass,
+        LFOOscillation,
+        LFOFrequency
     }: FilterParams) {
         this.parentNode = parentNode;
         this.audioContext = audioContext
@@ -30,7 +38,16 @@ export class Filter {
         this.frequency = frequency;
 
         this.node = this.createFilterNode();
-        this.node.connect(parentNode);
+
+        this.tuna = new Tuna(audioContext)
+        this.LFO = new this.tuna.LFO({
+            target: this.node.frequency,
+            oscillation: LFOOscillation,
+            bypass: LFOBypass,
+            frequency: LFOFrequency
+        })
+
+        this.node.connect(this.parentNode)
     }
 
     public changeFilterParams(filterParams: FilterParams)

@@ -66,7 +66,7 @@ function App() {
         soundEngine.current?.setVolume(Number(event.target.value) / 100);
     };
 
-    const handleFilterChange = (modifiedParam: 'frequency' | 'Q' | 'type', val: number) => {
+    const handleFilterChange = (modifiedParam: 'LFOFrequency' | 'LFOOscillation' | 'LFOBypass' | 'frequency' | 'Q' | 'type', val: number) => {
         setFilterParams((prevState) => {
             let newState : FilterParams = {
                 ...prevState,
@@ -77,7 +77,7 @@ function App() {
         });
     };
 
-    const handleEnvelopeChange = (modifiedParam: 'attack' | 'release' | 'decay' | 'sustain' | 'sustainLevel', val: number) => {
+    const handleEnvelopeChange = (modifiedParam: 'attack' | 'release' | 'decay' | 'sustain' , val: number) => {
         setEnvelopeParams((prevState) => {
             let newState : EnvelopeParams = {
                 ...prevState,
@@ -87,6 +87,8 @@ function App() {
             return newState
         });
     }
+
+    // const handleEffectChange = (modifiedParam: )
 
     const handleOscillatorTypeChange = (type: OscillatorType) => {
         soundEngine.current?.changeOscillatorParams(type);
@@ -239,15 +241,6 @@ function App() {
                                     onChange={(val) => handleEnvelopeChange('decay', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
-                                    text='Gain'
-                                    defaultVal={defaultParams.envelopeParams.sustainLevel}
-                                    minVal={0}
-                                    maxVal={1}
-                                    step={0.01}
-                                    sensitivity={0.25}
-                                    onChange={(val) => handleEnvelopeChange('sustainLevel', val)}
-                                ></SingleKnobControl>
-                                <SingleKnobControl
                                     text='Sustain'
                                     defaultVal={defaultParams.envelopeParams.sustain}
                                     minVal={0.01}
@@ -289,11 +282,32 @@ function App() {
                                     sensitivity={0.5}
                                     onChange={(val) => handleFilterChange('Q', val)}
                                 ></SingleKnobControl>
+                                <SingleKnobControl
+                                    text='LFO Freq'
+                                    defaultVal={defaultParams.filterParams.LFOFrequency}
+                                    minVal={0.1}
+                                    maxVal={10}
+                                    step={0.1}
+                                    sensitivity={0.5}
+                                    onChange={(val) => handleFilterChange('LFOFrequency', val)}
+                                ></SingleKnobControl>
+                                <SingleKnobControl
+                                    text='LFO Range'
+                                    defaultVal={defaultParams.filterParams.LFOOscillation}
+                                    minVal={0.1}
+                                    maxVal={1000}
+                                    step={0.1}
+                                    sensitivity={0.5}
+                                    onChange={(val) => handleFilterChange('LFOOscillation', val)}
+                                ></SingleKnobControl>
                             </KnobContainer>
                         </ControlBox>
 
                         <ControlBox>
-                            <ControlBoxHeader text='Effects'></ControlBoxHeader>
+                            <ControlBoxHeader text='Delay'></ControlBoxHeader>
+                            <KnobContainer>
+
+                            </KnobContainer>
                         </ControlBox>
 
                         <ControlBox>
