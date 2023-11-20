@@ -35,23 +35,28 @@ export class Envelope {
     }
 
     public play() {
-        const maxGain = 0.5;
-        const sustainGain = maxGain * this.sustainLevel; // should be a parameter
 
         // Set initial value
         this.node.gain.setTargetAtTime(this.node.gain.value, this.audioContext.currentTime, 0.0001);
         this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime + 0.0002);
 
         // Attack
-        this.node.gain.linearRampToValueAtTime(maxGain, this.audioContext.currentTime + this.attack + 0.0002);
+        this.node.gain.linearRampToValueAtTime(1, this.audioContext.currentTime + this.attack + 0.0002);
         // Decay
-        this.node.gain.linearRampToValueAtTime(sustainGain, this.audioContext.currentTime + this.attack + this.decay + 0.0002);
+        this.node.gain.linearRampToValueAtTime(this.sustainLevel, this.audioContext.currentTime + this.attack + this.decay + 0.0002);
     }
 
 
     // performs the usual release callback after stopping the note
     public stop() {
-        this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime);
-        this.node.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + this.release);
+        console.log("STOPPING")
+        console.log(`Value: ${this.node.gain.value}`)
+        console.log(`RELEASE: ${this.release}`)
+        // this.node.gain.cancelScheduledValues(this.audioContext.currentTime);
+        // this.node.gain.setValueAtTime(this.sustainLevel, this.audioContext.currentTime)
+        console.log(`sustain: ${this.sustainLevel}`)
+        this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime);
+        this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime + 0.0001);
+        this.node.gain.exponentialRampToValueAtTime(0.0002, this.audioContext.currentTime + this.release + 0.0001)
     }
 }

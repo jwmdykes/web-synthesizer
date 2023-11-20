@@ -10,12 +10,13 @@ export interface VoiceParams {
 }
 
 export class Voice {
+    static maxVolume = 0.5;
 
     private readonly audioContext: AudioContext;
-    private oscillator?: OscillatorNode;
-    private oscillatorOutput: AudioNode;
+    private readonly oscillatorOutput: AudioNode;
     private readonly envelope: Envelope;
     private readonly filter: Filter;
+    private oscillator?: OscillatorNode;
     private crossfadeGain?: GainNode;
     private params: VoiceParams;
 
@@ -85,7 +86,7 @@ export class Voice {
             this.crossfadeGain?.gain.cancelAndHoldAtTime(this.audioContext.currentTime);
             this.crossfadeGain?.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + crossfadeTime);
             newOscillator.crossfadeGain.gain.cancelAndHoldAtTime(this.audioContext.currentTime);
-            newOscillator.crossfadeGain.gain.exponentialRampToValueAtTime(1, this.audioContext.currentTime + crossfadeTime);
+            newOscillator.crossfadeGain.gain.exponentialRampToValueAtTime(Voice.maxVolume, this.audioContext.currentTime + crossfadeTime);
             this.oscillator.stop(this.audioContext.currentTime + crossfadeTime);
 
             this.oscillator = newOscillator.oscillator;
