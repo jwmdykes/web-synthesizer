@@ -7,6 +7,8 @@ export type EnvelopeParams = {
 }
 
 export class Envelope {
+    static maxVolume = 0.5;
+
     public attack: number;
     public decay: number;
     public sustain: number;
@@ -35,15 +37,15 @@ export class Envelope {
     }
 
     public play() {
-
+        console.log(`playing note. CURRENT GAIN: ${this.node.gain.value}`)
         // Set initial value
-        this.node.gain.setTargetAtTime(this.node.gain.value, this.audioContext.currentTime, 0.0001);
-        this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime + 0.0002);
+        this.node.gain.cancelScheduledValues(this.audioContext.currentTime)
+        this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime)
 
         // Attack
-        this.node.gain.linearRampToValueAtTime(1, this.audioContext.currentTime + this.attack + 0.0002);
+        this.node.gain.linearRampToValueAtTime(Envelope.maxVolume, this.audioContext.currentTime + this.attack + 0.0002);
         // Decay
-        this.node.gain.linearRampToValueAtTime(this.sustainLevel, this.audioContext.currentTime + this.attack + this.decay + 0.0002);
+        this.node.gain.linearRampToValueAtTime(this.sustainLevel * Envelope.maxVolume, this.audioContext.currentTime + this.attack + this.decay + 0.0002);
     }
 
 
@@ -52,11 +54,9 @@ export class Envelope {
         console.log("STOPPING")
         console.log(`Value: ${this.node.gain.value}`)
         console.log(`RELEASE: ${this.release}`)
-        // this.node.gain.cancelScheduledValues(this.audioContext.currentTime);
-        // this.node.gain.setValueAtTime(this.sustainLevel, this.audioContext.currentTime)
         console.log(`sustain: ${this.sustainLevel}`)
-        this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime);
-        this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime + 0.0001);
-        this.node.gain.exponentialRampToValueAtTime(0.0002, this.audioContext.currentTime + this.release + 0.0001)
+        this.node.gain.cancelScheduledValues(this.audioContext.currentTime)
+        this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime)
+        this.node.gain.exponentialRampToValueAtTime(0.00001, this.audioContext.currentTime + this.release + 0.0001)
     }
 }

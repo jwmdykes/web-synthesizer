@@ -47,9 +47,10 @@ export class SoundEngine {
 
     constructor(audioContext: AudioContext, params: SoundEngineParams) {
         this.mixCompressor = audioContext.createDynamicsCompressor();
-        this.mixCompressor.ratio.setValueAtTime(4, audioContext.currentTime)
+        this.mixCompressor.ratio.setValueAtTime(1.5, audioContext.currentTime)
         this.mixCompressor.attack.setValueAtTime(0.05, audioContext.currentTime)
-        
+        this.mixCompressor.release.setValueAtTime(0.25, audioContext.currentTime)
+
         this.masterVolume = audioContext.createGain();
         this.mixCompressor.connect(this.masterVolume);
         this.masterVolume.connect(audioContext.destination);

@@ -79,14 +79,16 @@ export class Voice {
             this.oscillator = newOscillator.oscillator;
             this.crossfadeGain = newOscillator.crossfadeGain;
 
-            this.crossfadeGain.gain.exponentialRampToValueAtTime(1, this.audioContext.currentTime + crossfadeTime);
+            this.crossfadeGain.gain.exponentialRampToValueAtTime(Voice.maxVolume, this.audioContext.currentTime + crossfadeTime);
         }
         else
         {
-            this.crossfadeGain?.gain.cancelAndHoldAtTime(this.audioContext.currentTime);
+            this.crossfadeGain?.gain.cancelScheduledValues(this.audioContext.currentTime)
+            this.crossfadeGain?.gain.setValueAtTime(this.crossfadeGain?.gain.value, this.audioContext.currentTime
+            );
             this.crossfadeGain?.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + crossfadeTime);
-            newOscillator.crossfadeGain.gain.cancelAndHoldAtTime(this.audioContext.currentTime);
-            newOscillator.crossfadeGain.gain.exponentialRampToValueAtTime(Voice.maxVolume, this.audioContext.currentTime + crossfadeTime);
+
+            newOscillator.crossfadeGain?.gain.exponentialRampToValueAtTime(Voice.maxVolume, this.audioContext.currentTime + crossfadeTime);
             this.oscillator.stop(this.audioContext.currentTime + crossfadeTime);
 
             this.oscillator = newOscillator.oscillator;
