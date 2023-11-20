@@ -130,28 +130,32 @@ function App() {
                         className='bg-base-100 p-6 rounded-lg shadow-lg w-full max-w-md z-50 overflow-auto'
                         onClick={(e) => e.stopPropagation()}
                     >
-                        <div className='text-center'>
-                            <h2 className='text-2xl font-bold mb-4'>About</h2>
-                            <p className='mb-4'>
-                                Oscillator icons are created by{' '}
-                                <a href='https://www.flaticon.com/authors/judanna'>
-                                    <em className='not-italic text-primary-content hover:underline underline-offset-4'>
-                                        judanna
-                                    </em>
-                                </a>{' '}
-                            </p>
-                            <p className='mb-4'>
-                                Oscillator icons are created by{' '}
-                                <a href='https://www.flaticon.com/authors/iconading'>
-                                    <em className='not-italic text-primary-content hover:underline underline-offset-4'>
-                                        iconading
-                                    </em>
-                                </a>{' '}
-                            </p>
+                        <div>
+                            <h2 className='text-2xl font-bold mb-8'>About</h2>
+                            <div className='flex flex-col gap-5 mb-6'>
+                                <p>This is a simple subtractive synthesizer created with the Web Audio API.
+                                </p>
+                                <p>
+                                    You can control the synthesizer by clicking or tapping on the virtual keyboard at the bottom of the screen, or by using the keyboard keys 'a' to 'k'.
+                                </p>
+                            </div>
+                            <h2 className='text-2xl font-bold mb-8'>Acknowledgements</h2>
+                            <div className='flex flex-col gap-5'>
+                                <p>
+                                    Oscillator icons are created by{' '}
+                                    <a href='https://www.flaticon.com/authors/iconading'>
+                                        <em className='not-italic text-primary-content hover:underline underline-offset-4'>
+                                            iconading
+                                        </em>
+                                    </a>{' '}
+                                </p>
+                            </div>
 
-                            <button className='btn' onClick={toggleModalVisible}>
-                                Close
-                            </button>
+                            <div className='flex justify-end mt-8'>
+                                <button className='btn btn-primary' onClick={toggleModalVisible}>
+                                    Close
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
