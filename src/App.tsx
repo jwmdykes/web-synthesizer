@@ -39,82 +39,27 @@ function App() {
         soundEngine.current?.setVolume(Number(event.target.value) / 100);
     };
 
-    const handleFilterFrequencyChange = (val: number) => {
+    const handleFilterChange = (modifiedParam: 'frequency' | 'Q' | 'type', val: number) => {
         setFilterParams((prevState) => {
             let newState : FilterParams = {
                 ...prevState,
-                frequency: val,
+                [modifiedParam]: val,
             }
             soundEngine.current?.changeFilterParams(newState);
             return newState
         });
     };
 
-    const handleFilterQChange = (val: number) => {
-        setFilterParams((prevState) => {
-            let newState : FilterParams = {
-                ...prevState,
-                Q: val,
-            }
-            soundEngine.current?.changeFilterParams(newState);
-            return newState
-        });
-    };
-
-    const handleFilterTypeChange = (val: FilterType) => {
-        setFilterParams((prevState) => {
-            let newState : FilterParams = {
-                ...prevState,
-                type: val,
-            }
-            soundEngine.current?.changeFilterParams(newState);
-            return newState
-        });
-    };
-
-    const handleAttackChange = (val: number) => {
+    const handleEnvelopeChange = (modifiedParam: 'attack' | 'release' | 'decay' | 'sustain' | 'sustainLevel', val: number) => {
         setEnvelopeParams((prevState) => {
             let newState : EnvelopeParams = {
                 ...prevState,
-                attack: Number(val)
+                [modifiedParam]: Number(val)
             }
             soundEngine.current?.changeEnvelopeParams(newState);
             return newState
         });
-    };
-
-    const handleDecayChange = (val: number) => {
-        setEnvelopeParams((prevState) => {
-            let newState : EnvelopeParams = {
-                ...prevState,
-                decay: Number(val)
-            }
-            soundEngine.current?.changeEnvelopeParams(newState);
-            return newState
-        });
-    };
-
-    const handleSustainChange = (val: number) => {
-        setEnvelopeParams((prevState) => {
-            let newState : EnvelopeParams = {
-                ...prevState,
-                sustain: Number(val)
-            }
-            soundEngine.current?.changeEnvelopeParams(newState);
-            return newState
-        });
-    };
-
-    const handleReleaseChange = (val: number) => {
-        setEnvelopeParams((prevState) => {
-            let newState : EnvelopeParams = {
-                ...prevState,
-                release: Number(val)
-            }
-            soundEngine.current?.changeEnvelopeParams(newState);
-            return newState
-        });
-    };
+    }
 
     const handleOscillatorTypeChange = (type: OscillatorType) => {
         soundEngine.current?.changeOscillatorParams(type);
@@ -250,7 +195,7 @@ function App() {
                                     maxVal={1}
                                     step={0.01}
                                     sensitivity={0.25}
-                                    onChange={handleAttackChange}
+                                    onChange={(val) => handleEnvelopeChange('attack', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Decay'
@@ -259,7 +204,16 @@ function App() {
                                     maxVal={1}
                                     step={0.01}
                                     sensitivity={0.25}
-                                    onChange={handleDecayChange}
+                                    onChange={(val) => handleEnvelopeChange('decay', val)}
+                                ></SingleKnobControl>
+                                <SingleKnobControl
+                                    text='Gain'
+                                    defaultVal={defaultParams.envelopeParams.sustainLevel}
+                                    minVal={0}
+                                    maxVal={1}
+                                    step={0.01}
+                                    sensitivity={0.25}
+                                    onChange={(val) => handleEnvelopeChange('sustainLevel', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Sustain'
@@ -268,7 +222,7 @@ function App() {
                                     maxVal={1}
                                     step={0.01}
                                     sensitivity={0.25}
-                                    onChange={handleSustainChange}
+                                    onChange={(val) => handleEnvelopeChange('sustain', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Release'
@@ -277,7 +231,7 @@ function App() {
                                     maxVal={1}
                                     step={0.01}
                                     sensitivity={0.25}
-                                    onChange={handleReleaseChange}
+                                    onChange={(val) => handleEnvelopeChange('release', val)}
                                 ></SingleKnobControl>
                             </div>
                         </ControlBox>
@@ -292,7 +246,7 @@ function App() {
                                     maxVal={2000}
                                     step={5}
                                     sensitivity={0.5}
-                                    onChange={handleFilterFrequencyChange}
+                                    onChange={(val) => handleFilterChange('frequency', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Resonance'
@@ -301,7 +255,7 @@ function App() {
                                     maxVal={10}
                                     step={0.1}
                                     sensitivity={0.5}
-                                    onChange={handleFilterQChange}
+                                    onChange={(val) => handleFilterChange('Q', val)}
                                 ></SingleKnobControl>
                             </div>
                         </ControlBox>

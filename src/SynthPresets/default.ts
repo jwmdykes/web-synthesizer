@@ -1,6 +1,5 @@
 import {EnvelopeParams} from "../soundEngine/Envelope";
 import {FilterParams} from "../soundEngine/Filter";
-import * as os from "os";
 
 const envelopeParams: EnvelopeParams = {
     attack: 0.5,
@@ -23,6 +22,5 @@ export default {
     envelopeParams: envelopeParams,
     filterParams: filterParams,
     oscillatorParams: oscillatorParams,
-
 }
 
