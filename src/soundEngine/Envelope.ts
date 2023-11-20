@@ -37,13 +37,13 @@ export class Envelope {
     public play() {
 
         // Set initial value
-        this.node.gain.setTargetAtTime(this.node.gain.value, this.audioContext.currentTime, 0.0001);
-        this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime + 0.0002);
+        this.node.gain.cancelScheduledValues(this.audioContext.currentTime)
+        this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime)
 
         // Attack
-        this.node.gain.linearRampToValueAtTime(1, this.audioContext.currentTime + this.attack + 0.0002);
+        this.node.gain.linearRampToValueAtTime(1, this.audioContext.currentTime + this.attack);
         // Decay
-        this.node.gain.linearRampToValueAtTime(this.sustainLevel, this.audioContext.currentTime + this.attack + this.decay + 0.0002);
+        this.node.gain.linearRampToValueAtTime(this.sustainLevel, this.audioContext.currentTime + this.attack + this.decay);
     }
 
 
@@ -55,8 +55,9 @@ export class Envelope {
         // this.node.gain.cancelScheduledValues(this.audioContext.currentTime);
         // this.node.gain.setValueAtTime(this.sustainLevel, this.audioContext.currentTime)
         console.log(`sustain: ${this.sustainLevel}`)
-        this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime);
-        this.node.gain.cancelAndHoldAtTime(this.audioContext.currentTime + 0.0001);
-        this.node.gain.exponentialRampToValueAtTime(0.0002, this.audioContext.currentTime + this.release + 0.0001)
+
+        this.node.gain.cancelScheduledValues(this.audioContext.currentTime)
+        this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime)
+        this.node.gain.exponentialRampToValueAtTime(0.00001, this.audioContext.currentTime + this.release + 0.0001)
     }
 }
