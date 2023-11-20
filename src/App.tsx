@@ -25,6 +25,7 @@ import {SoundEngine} from "./soundEngine/SoundEngine";
 import {VoiceParams} from "./soundEngine/Voice";
 
 import defaultParams from "./SynthPresets/default"
+import KnobContainer from "./UIComponents/KnobContainer";
 
 
 function App() {
@@ -148,10 +149,10 @@ function App() {
                     className={`flex flex-col gap-5 pt-6`}
                     style={{paddingBottom: `${pianoHeight + 16}px`}}
                 >
-                    <div className='mx-auto container px-6 grid grid-cols-2 gap-2'>
+                    <div className='mx-auto container px-6 grid tablet:grid-cols-2 desktop:grid-cols-3 gap-2'>
                         <ControlBox>
                             <ControlBoxHeader text='Oscillator Type'></ControlBoxHeader>
-                            <div className='flex items-center justify-center w-full gap-6 desktop:gap-12'>
+                            <div className='flex flex-wrap items-center justify-center w-full gap-6 desktop:gap-12'>
                                 <OscillatorButton
                                     text='Sine'
                                     src={sineWave}
@@ -187,7 +188,7 @@ function App() {
 
                         <ControlBox>
                             <ControlBoxHeader text='Amplitude Envelope'></ControlBoxHeader>
-                            <div className='flex gap-6'>
+                            <KnobContainer>
                                 <SingleKnobControl
                                     text='Attack'
                                     defaultVal={defaultParams.envelopeParams.attack}
@@ -233,12 +234,12 @@ function App() {
                                     sensitivity={0.25}
                                     onChange={(val) => handleEnvelopeChange('release', val)}
                                 ></SingleKnobControl>
-                            </div>
+                            </KnobContainer>
                         </ControlBox>
 
                         <ControlBox>
                             <ControlBoxHeader text='Filter'></ControlBoxHeader>
-                            <div className='flex gap-6'>
+                            <KnobContainer>
                                 <SingleKnobControl
                                     text='Freq'
                                     defaultVal={defaultParams.filterParams.frequency}
@@ -257,7 +258,7 @@ function App() {
                                     sensitivity={0.5}
                                     onChange={(val) => handleFilterChange('Q', val)}
                                 ></SingleKnobControl>
-                            </div>
+                            </KnobContainer>
                         </ControlBox>
 
                         <ControlBox>
