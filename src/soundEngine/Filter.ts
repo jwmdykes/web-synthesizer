@@ -1,3 +1,5 @@
+import {TunaAudioNode} from "tunajs";
+
 export type FilterType = 'lowpass' | 'highpass' | 'bandpass' | 'notch';
 
 export interface FilterParams {
@@ -13,9 +15,9 @@ export class Filter {
     public node: BiquadFilterNode;
 
     private audioContext: AudioContext;
-    private parentNode: AudioNode;
+    private parentNode: AudioNode | TunaAudioNode;
 
-    constructor(audioContext: AudioContext, parentNode: AudioNode, {
+    constructor(audioContext: AudioContext, parentNode: AudioNode | TunaAudioNode, {
         type,
         Q,
         frequency

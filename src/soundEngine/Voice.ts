@@ -1,7 +1,7 @@
 import {Filter, FilterParams} from "./Filter";
 import {Envelope, EnvelopeParams} from "./Envelope";
 import {createOscillator} from "./Oscillator";
-import {midiNoteToFrequency} from "./Tunings";
+import {TunaAudioNode} from "tunajs";
 
 export interface VoiceParams {
     filterParams: FilterParams,
@@ -42,7 +42,7 @@ export class Voice {
         this.filter.changeFilterParams(filterParams);
     }
 
-    constructor(audioContext: AudioContext, parentNode: AudioNode, params: VoiceParams) {
+    constructor(audioContext: AudioContext, parentNode: AudioNode | TunaAudioNode, params: VoiceParams) {
         this.params = params;
         this.audioContext = audioContext;
 

@@ -1,6 +1,7 @@
 import {Voice, VoiceParams} from "./Voice";
 import {EnvelopeParams} from "./Envelope";
 import {FilterParams} from "./Filter";
+import {TunaEffect} from "./TunaEffect";
 
 export interface SoundEngineParams {
     midiVoices: number[],
@@ -13,6 +14,7 @@ export class SoundEngine {
     private readonly audioContext: AudioContext;
     private readonly masterVolume: GainNode;
     private readonly mixCompressor: DynamicsCompressorNode;
+    private readonly effect: TunaEffect
 
     public setVolume(volume: number)
     {
@@ -46,12 +48,16 @@ export class SoundEngine {
     }
 
     constructor(audioContext: AudioContext, params: SoundEngineParams) {
+        this.effect = new TunaEffect(audioContext);
+
         this.mixCompressor = audioContext.createDynamicsCompressor();
         this.mixCompressor.ratio.setValueAtTime(1.5, audioContext.currentTime)
         this.mixCompressor.attack.setValueAtTime(0.05, audioContext.currentTime)
         this.mixCompressor.release.setValueAtTime(0.25, audioContext.currentTime)
 
         this.masterVolume = audioContext.createGain();
+
+        this.effect.node.connect(this.mixCompressor);
         this.mixCompressor.connect(this.masterVolume);
         this.masterVolume.connect(audioContext.destination);
         this.masterVolume.gain.value = params.volume;
@@ -61,7 +67,7 @@ export class SoundEngine {
         this.voices = new Map<number, Voice>;
         for (let i of params.midiVoices)
         {
-            this.voices.set(i, new Voice(this.audioContext, this.mixCompressor, params.voiceParams));
+            this.voices.set(i, new Voice(this.audioContext, this.effect.node, params.voiceParams));
         }
     }
 
