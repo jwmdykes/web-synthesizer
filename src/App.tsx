@@ -5,6 +5,8 @@ import React, {
     MouseEventHandler, MutableRefObject,
 } from 'react';
 
+import {useHotkeys} from "react-hotkeys-hook";
+
 import Piano from './UIComponents/Piano';
 import ControlBoxHeader from './UIComponents/ControlBoxHeader';
 import OscillatorButton from './UIComponents/OscillatorButton';
@@ -26,6 +28,7 @@ import {VoiceParams} from "./soundEngine/Voice";
 
 import defaultParams from "./SynthPresets/default"
 import KnobContainer from "./UIComponents/KnobContainer";
+import keyMap from "./SynthPresets/hotkeys";
 
 
 function App() {
@@ -34,6 +37,29 @@ function App() {
     const [envelopeParams, setEnvelopeParams] = useState<EnvelopeParams>(defaultParams.envelopeParams);
     const [filterParams, setFilterParams] = useState<FilterParams>(defaultParams.filterParams);
     const [oscillatorType, setOscillatorType] = useState<OscillatorType>(defaultParams.oscillatorParams);
+
+    const pressedKeys: MutableRefObject<Map<string, boolean>> = useRef(new Map());
+
+    useHotkeys(Array.from(keyMap.keys()), (e) => {
+        const midiNote = keyMap.get(e.key);
+        if (pressedKeys.current.get(e.key) || midiNote == null) return;
+
+        pressedKeys.current.set(e.key, true);
+        soundEngine.current?.play(midiNote)
+    }, {
+        keydown: true
+    }, [])
+
+    useHotkeys(Array.from(keyMap.keys()), (e) => {
+        const midiNote = keyMap.get(e.key);
+        if (midiNote == null) return;
+        pressedKeys.current.set(e.key, false)
+        soundEngine.current?.stop(midiNote)
+    }, {
+        keydown: false,
+        keyup: true,
+    }, [])
+
 
     const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setVolume(Number(event.target.value));
