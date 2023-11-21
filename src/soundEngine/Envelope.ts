@@ -45,13 +45,6 @@ export class Envelope {
 
     // performs the usual release callback after stopping the note
     public stop() {
-        console.log("STOPPING")
-        console.log(`Value: ${this.node.gain.value}`)
-        console.log(`RELEASE: ${this.release}`)
-        // this.node.gain.cancelScheduledValues(this.audioContext.currentTime);
-        // this.node.gain.setValueAtTime(this.sustainLevel, this.audioContext.currentTime)
-        console.log(`sustain: ${this.sustain}`)
-
         this.node.gain.cancelScheduledValues(this.audioContext.currentTime)
         this.node.gain.setValueAtTime(this.node.gain.value, this.audioContext.currentTime)
         this.node.gain.exponentialRampToValueAtTime(0.00001, this.audioContext.currentTime + this.release + 0.0001)
