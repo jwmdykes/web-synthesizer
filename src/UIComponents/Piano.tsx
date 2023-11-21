@@ -10,8 +10,8 @@ function WhiteKey(props: {
         <>
             <div
                 className='w-full relative'
-                onMouseDown={props.mouseDownCallback}
-                onMouseUp={props.mouseUpCallback}
+                onPointerDown={props.mouseDownCallback}
+                onPointerLeave={props.mouseUpCallback}
             >
                 <div
                     className='font-semibold text-gray-700 bg-white rounded-b-md w-full h-full border border-gray-950 hover:cursor-pointer hover:bg-slate-200 flex items-center justify-center'>
@@ -32,8 +32,8 @@ function BlackKey(props: {
         <>
             <div
                 className='tracking-widest text-gray-200 font-semibold bg-black w-1/2 h-1/2 border border-gray-800 hover:cursor-pointer hover:bg-gray-600 flex items-center justify-center absolute top-0 right-0 translate-x-1/2 rounded-b-md z-10'
-                onMouseDown={props.mouseDownCallback}
-                onMouseUp={props.mouseUpCallback}
+                onPointerDown={props.mouseDownCallback}
+                onPointerLeave={props.mouseUpCallback}
             >
                 {props.letter}
             </div>
