@@ -14,7 +14,7 @@ function WhiteKey(props: {
                 onPointerLeave={props.mouseUpCallback}
             >
                 <div
-                    className='font-semibold text-gray-700 bg-white rounded-b-md w-full h-full border border-gray-950 hover:cursor-pointer hover:bg-slate-200 flex items-center justify-center'>
+                    className='font-semibold text-gray-700 bg-white rounded-b-md w-full h-full border border-gray-950 hover:cursor-pointer hover:bg-slate-200 flex items-end justify-center pb-6'>
                     {props.letter}
                 </div>
                 {props.children}
@@ -35,7 +35,7 @@ function BlackKey(props: {
                 onPointerDown={props.mouseDownCallback}
                 onPointerLeave={props.mouseUpCallback}
             >
-                {props.letter}
+                {/*{props.letter}*/}
             </div>
         </>
     );
@@ -60,7 +60,7 @@ export default function Piano(props: {
     return (
         <div className='m-auto w-full max-w-screen-tablet h-full bg-gray-900 rounded-t-md border-t border-slate-700 drop-shadow-lg p-2'>
             <div className='h-full flex justify-center'>
-                <div className='flex flex-row w-full h-full overflow-hidden'>
+                <div className='flex flex-row w-full h-full overflow-hidden select-none'>
                     {whiteKeys.map((key, index) => {
                         const midiNumber: number = whiteKeyMidiNumbers.get(key) ?? 0;
 
