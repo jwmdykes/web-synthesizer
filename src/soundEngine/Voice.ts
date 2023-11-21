@@ -12,8 +12,9 @@ export interface VoiceParams {
 export class Voice {
     static maxVolume = 0.5;
 
+    private parent: AudioNode | TunaAudioNode;
     private readonly audioContext: AudioContext;
-    private readonly oscillatorOutput: AudioNode;
+    private readonly oscillatorOutput: AudioNode | TunaAudioNode;
     private readonly envelope: Envelope;
     private readonly filter: Filter;
     private oscillator?: OscillatorNode;
@@ -26,6 +27,14 @@ export class Voice {
         this.envelope.sustain = envelopeParams.sustain;
         this.envelope.decay = envelopeParams.decay;
         this.envelope.release = envelopeParams.release;
+    }
+
+    public connect(destination : AudioNode | TunaAudioNode)
+    {
+        this.filter.node.disconnect();
+        this.parent = destination
+        this.filter.node.connect(this.parent);
+        this.filter.setParent(this.parent);
     }
 
     public changeOscillatorParams(oscillatorParams: OscillatorType)
@@ -44,6 +53,7 @@ export class Voice {
     constructor(audioContext: AudioContext, parentNode: AudioNode | TunaAudioNode, params: VoiceParams) {
         this.params = params;
         this.audioContext = audioContext;
+        this.parent = parentNode;
 
         this.filter = new Filter(this.audioContext, parentNode, this.params.filterParams);
         this.envelope = new Envelope(audioContext, this.filter.node, params.envelopeParams);

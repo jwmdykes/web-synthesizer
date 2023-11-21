@@ -22,6 +22,11 @@ export class Filter {
     private audioContext: AudioContext;
     private parentNode: AudioNode | TunaAudioNode;
 
+    public setParent(node: AudioNode | TunaAudioNode)
+    {
+        this.parentNode = node;
+    }
+
     constructor(audioContext: AudioContext, parentNode: AudioNode | TunaAudioNode, {
         type,
         Q,

@@ -1,10 +1,11 @@
 import {Voice, VoiceParams} from "./Voice";
 import {EnvelopeParams} from "./Envelope";
 import {FilterParams} from "./Filter";
-import {TunaEffect} from "./TunaEffect";
+import {EffectParams, TunaEffect} from "./TunaEffect";
 
 export interface SoundEngineParams {
     midiVoices: number[],
+    effectParams: EffectParams,
     voiceParams: VoiceParams,
     volume: number,
 }
@@ -14,7 +15,7 @@ export class SoundEngine {
     private readonly audioContext: AudioContext;
     private readonly masterVolume: GainNode;
     private readonly mixCompressor: DynamicsCompressorNode;
-    private readonly effect: TunaEffect
+    private effect: TunaEffect
 
     public setVolume(volume: number)
     {
@@ -37,10 +38,18 @@ export class SoundEngine {
         }
     }
 
+    public changeEffectParams(effectParams: EffectParams)
+    {
+        this.effect.changeEffectParams(effectParams);
+
+        for (let [_, val] of this.voices)
+        {
+            val.connect(this.effect.node);
+        }
+    }
+
     public changeFilterParams(filterParams: FilterParams)
     {
-        console.log("MODIFYING FILTER PARAMS:")
-        console.log(filterParams)
         for (let [_, value] of this.voices)
         {
             value.changeFilterParams(filterParams);
@@ -48,7 +57,6 @@ export class SoundEngine {
     }
 
     constructor(audioContext: AudioContext, params: SoundEngineParams) {
-        this.effect = new TunaEffect(audioContext);
 
         this.mixCompressor = audioContext.createDynamicsCompressor();
         this.mixCompressor.ratio.setValueAtTime(1.5, audioContext.currentTime)
@@ -57,14 +65,15 @@ export class SoundEngine {
 
         this.masterVolume = audioContext.createGain();
 
-        this.effect.node.connect(this.mixCompressor);
+        this.effect = new TunaEffect(audioContext, this.mixCompressor, params.effectParams);
+
         this.mixCompressor.connect(this.masterVolume);
         this.masterVolume.connect(audioContext.destination);
         this.masterVolume.gain.value = params.volume;
 
         this.audioContext = audioContext;
 
-        this.voices = new Map<number, Voice>;
+        this.voices = new Map<number, Voice>();
         for (let i of params.midiVoices)
         {
             this.voices.set(i, new Voice(this.audioContext, this.effect.node, params.voiceParams));

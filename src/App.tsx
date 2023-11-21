@@ -11,7 +11,7 @@ import Piano from './UIComponents/Piano';
 import ControlBoxHeader from './UIComponents/ControlBoxHeader';
 import OscillatorButton from './UIComponents/OscillatorButton';
 
-import {FilterParams, FilterType} from './soundEngine/Filter';
+import {FilterParams} from './soundEngine/Filter';
 
 import SingleKnobControl from './UIComponents/SingleKnobControl';
 import ControlBox from './UIComponents/ControlBox';
@@ -29,6 +29,7 @@ import {VoiceParams} from "./soundEngine/Voice";
 import defaultParams from "./SynthPresets/default"
 import KnobContainer from "./UIComponents/KnobContainer";
 import keyMap from "./SynthPresets/hotkeys";
+import {ChorusParams, EffectParams} from "./soundEngine/TunaEffect";
 
 
 function App() {
@@ -37,6 +38,8 @@ function App() {
     const [envelopeParams, setEnvelopeParams] = useState<EnvelopeParams>(defaultParams.envelopeParams);
     const [filterParams, setFilterParams] = useState<FilterParams>(defaultParams.filterParams);
     const [oscillatorType, setOscillatorType] = useState<OscillatorType>(defaultParams.oscillatorParams);
+    const [effectParams, setEffectParams] = useState<EffectParams>(defaultParams.effectParams);
+
 
     const pressedKeys: MutableRefObject<Map<string, boolean>> = useRef(new Map());
 
@@ -88,7 +91,19 @@ function App() {
         });
     }
 
-    // const handleEffectChange = (modifiedParam: )
+    const handleEffectChange = (effect: null | 'chorus', modifiedParam: keyof ChorusParams, val: number) => {
+        setEffectParams((prevState) => {
+            let newState : EffectParams = {
+                activeEffect: effect,
+                effectParams: {
+                    ...prevState.effectParams,
+                    [modifiedParam]: val,
+                }
+            }
+            soundEngine.current?.changeEffectParams(newState);
+            return newState
+        });
+    }
 
     const handleOscillatorTypeChange = (type: OscillatorType) => {
         soundEngine.current?.changeOscillatorParams(type);
@@ -106,6 +121,7 @@ function App() {
         }
         soundEngine.current = new SoundEngine(audioContext, {
             midiVoices: midiVoices,
+            effectParams: effectParams,
             voiceParams: voiceParams,
             volume: volume/100
         })
@@ -304,9 +320,35 @@ function App() {
                         </ControlBox>
 
                         <ControlBox>
-                            <ControlBoxHeader text='Delay'></ControlBoxHeader>
+                            <ControlBoxHeader text='Chorus'></ControlBoxHeader>
                             <KnobContainer>
-
+                                <SingleKnobControl
+                                    text='Rate'
+                                    defaultVal={defaultParams.effectParams.effectParams.rate}
+                                    minVal={0.1}
+                                    maxVal={20}
+                                    step={0.1}
+                                    sensitivity={0.5}
+                                    onChange={(val) => handleEffectChange('chorus', 'rate', val)}
+                                ></SingleKnobControl>
+                                <SingleKnobControl
+                                    text='Delay'
+                                    defaultVal={defaultParams.effectParams.effectParams.delay}
+                                    minVal={0.1}
+                                    maxVal={10}
+                                    step={0.1}
+                                    sensitivity={0.5}
+                                    onChange={(val) => handleEffectChange('chorus', 'delay', val)}
+                                ></SingleKnobControl>
+                                <SingleKnobControl
+                                    text='Feedback'
+                                    defaultVal={defaultParams.effectParams.effectParams.feedback}
+                                    minVal={0}
+                                    maxVal={1}
+                                    step={0.01}
+                                    sensitivity={1}
+                                    onChange={(val) => handleEffectChange('chorus', 'feedback', val)}
+                                ></SingleKnobControl>
                             </KnobContainer>
                         </ControlBox>
 
