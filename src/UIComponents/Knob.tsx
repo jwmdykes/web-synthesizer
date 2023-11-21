@@ -1,10 +1,10 @@
-import {useState, useCallback, useEffect, MouseEventHandler} from 'react';
+import React, {useState, useCallback, useEffect, MouseEventHandler} from 'react';
 import {ReactComponent as DialBackground} from '../assets/dialbackground.svg';
 import {ReactComponent as DialForeground} from '../assets/dialforeground.svg';
 
 function round(value: number, step: number) {
     step || (step = 1.0);
-    var inv = 1.0 / step;
+    let inv = 1.0 / step;
     return Math.round(value * inv) / inv;
 }
 
@@ -120,6 +120,7 @@ const Knob: React.FC<KnobProps> = ({
     const startDrag: MouseEventHandler<HTMLDivElement> = useCallback(
         (e) => {
             e.preventDefault();
+            e.stopPropagation()
             setIsDragging(true);
             setStartY(e.clientY); // Set the start Y position
             setStartRotation(rotation); // Set the start rotation
@@ -180,17 +181,26 @@ const Knob: React.FC<KnobProps> = ({
 
     // Add event listeners when dragging starts and remove them when it ends
     useEffect(() => {
-        const handleMouseMove = (e: MouseEvent) => onDrag(e);
-        const handleMouseUp = () => endDrag();
+        const handleMouseMove = (e: MouseEvent) => {
+            console.log("GOING")
+            e.preventDefault()
+            e.stopPropagation()
+            onDrag(e);
+        }
+        const handleMouseUp = (e: MouseEvent) => {
+            e.preventDefault()
+            e.stopPropagation()
+            endDrag();
+        }
 
         if (isDragging) {
-            window.addEventListener('mousemove', handleMouseMove);
-            window.addEventListener('mouseup', handleMouseUp);
+            window.addEventListener('pointermove', handleMouseMove);
+            window.addEventListener('pointerup', handleMouseUp);
         }
 
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener('pointermove', handleMouseMove);
+            window.removeEventListener('pointerup', handleMouseUp);
         };
     }, [isDragging, onDrag, endDrag]);
 
@@ -199,7 +209,7 @@ const Knob: React.FC<KnobProps> = ({
             <div className='flex flex-col items-center'>
                 <div
                     className='relative w-16 h-16'
-                    onMouseDown={startDrag}
+                    onPointerDown={startDrag}
                     onDoubleClick={resetValues}
                 >
                     <div className='absolute inset-0 flex'>
