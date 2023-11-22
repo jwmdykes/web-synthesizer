@@ -17,41 +17,32 @@ export class SoundEngine {
     private readonly mixCompressor: DynamicsCompressorNode;
     private effect: TunaEffect
 
-    public setVolume(volume: number)
-    {
+    public setVolume(volume: number) {
         this.masterVolume.gain.setValueAtTime(volume, this.audioContext.currentTime);
     }
 
-    public changeOscillatorParams(oscillatorParams: OscillatorType)
-    {
-        for (let [_, value] of this.voices)
-        {
+    public changeOscillatorParams(oscillatorParams: OscillatorType) {
+        for (let [_, value] of this.voices) {
             value.changeOscillatorParams(oscillatorParams);
         }
     }
 
-    public changeEnvelopeParams(envelopeParams: EnvelopeParams)
-    {
-        for (let [_, value] of this.voices)
-        {
+    public changeEnvelopeParams(envelopeParams: EnvelopeParams) {
+        for (let [_, value] of this.voices) {
             value.changeEnvelopeParams(envelopeParams);
         }
     }
 
-    public changeEffectParams(effectParams: EffectParams)
-    {
+    public changeEffectParams(effectParams: EffectParams) {
         this.effect.changeEffectParams(effectParams);
 
-        for (let [_, val] of this.voices)
-        {
+        for (let [_, val] of this.voices) {
             val.connect(this.effect.node);
         }
     }
 
-    public changeFilterParams(filterParams: FilterParams)
-    {
-        for (let [_, value] of this.voices)
-        {
+    public changeFilterParams(filterParams: FilterParams) {
+        for (let [_, value] of this.voices) {
             value.changeFilterParams(filterParams);
         }
     }
@@ -74,24 +65,21 @@ export class SoundEngine {
         this.audioContext = audioContext;
 
         this.voices = new Map<number, Voice>();
-        for (let i of params.midiVoices)
-        {
+        for (let i of params.midiVoices) {
             this.voices.set(i, new Voice(this.audioContext, this.effect.node, params.voiceParams));
         }
     }
 
     public play(noteNumber: number) {
         let voice = this.voices.get(noteNumber);
-        if (voice)
-        {
+        if (voice) {
             voice.play(noteNumber);
         }
     }
 
     public stop(noteNumber: number) {
         let voice = this.voices.get(noteNumber);
-        if (voice)
-        {
+        if (voice) {
             voice.stop();
         }
     }

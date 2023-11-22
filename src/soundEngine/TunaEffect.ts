@@ -1,28 +1,24 @@
 import Tuna from 'tunajs'
 
-export interface ChorusParams
-{
+export interface ChorusParams {
     rate: number,
     feedback: number,
     delay: number,
     bypass: boolean,
 }
 
-export interface EffectParams
-{
+export interface EffectParams {
     activeEffect: null | "chorus",
     effectParams: ChorusParams,
 }
 
-export class TunaEffect
-{
+export class TunaEffect {
     private readonly parent: AudioNode | Tuna.TunaAudioNode
     private tuna
     public node: Tuna.TunaAudioNode
 
 
-    public changeEffectParams(effectParams: EffectParams)
-    {
+    public changeEffectParams(effectParams: EffectParams) {
         this.node.disconnect(this.parent)
 
         switch (effectParams.activeEffect) {

@@ -21,32 +21,28 @@ export class Voice {
     private crossfadeGain?: GainNode;
     private params: VoiceParams;
 
-    public changeEnvelopeParams(envelopeParams: EnvelopeParams)
-    {
+    public changeEnvelopeParams(envelopeParams: EnvelopeParams) {
         this.envelope.attack = envelopeParams.attack;
         this.envelope.sustain = envelopeParams.sustain;
         this.envelope.decay = envelopeParams.decay;
         this.envelope.release = envelopeParams.release;
     }
 
-    public connect(destination : AudioNode | TunaAudioNode)
-    {
+    public connect(destination: AudioNode | TunaAudioNode) {
         this.filter.node.disconnect();
         this.parent = destination
         this.filter.node.connect(this.parent);
         this.filter.setParent(this.parent);
     }
 
-    public changeOscillatorParams(oscillatorParams: OscillatorType)
-    {
+    public changeOscillatorParams(oscillatorParams: OscillatorType) {
         this.params = {
             ...this.params,
             oscillatorParams: oscillatorParams,
         }
     }
 
-    public changeFilterParams(filterParams: FilterParams)
-    {
+    public changeFilterParams(filterParams: FilterParams) {
         this.filter.changeFilterParams(filterParams);
     }
 
@@ -60,11 +56,10 @@ export class Voice {
         this.oscillatorOutput = this.envelope.node;
     }
 
-    private createOscillator(noteNumber: number)
-    {
+    private createOscillator(noteNumber: number) {
         const newOscillator = createOscillator(this.audioContext, this.params.oscillatorParams, noteNumber);
         // gain used for avoiding clipping when replacing oscillators.
-        const crossfadeGain : GainNode = new GainNode(this.audioContext, {
+        const crossfadeGain: GainNode = new GainNode(this.audioContext, {
             gain: 0,
         });
 
@@ -83,15 +78,12 @@ export class Voice {
 
         let newOscillator = this.createOscillator(noteNumber);
 
-        if (this.oscillator == null)
-        {
+        if (this.oscillator == null) {
             this.oscillator = newOscillator.oscillator;
             this.crossfadeGain = newOscillator.crossfadeGain;
 
             this.crossfadeGain.gain.exponentialRampToValueAtTime(Voice.maxVolume, this.audioContext.currentTime + crossfadeTime);
-        }
-        else
-        {
+        } else {
             this.crossfadeGain?.gain.cancelScheduledValues(this.audioContext.currentTime)
             this.crossfadeGain?.gain.setValueAtTime(this.crossfadeGain?.gain.value, this.audioContext.currentTime
             );

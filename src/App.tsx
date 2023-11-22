@@ -71,7 +71,7 @@ function App() {
 
     const handleFilterChange = (modifiedParam: 'LFOFrequency' | 'LFOOscillation' | 'LFOBypass' | 'frequency' | 'Q' | 'type', val: number) => {
         setFilterParams((prevState) => {
-            let newState : FilterParams = {
+            let newState: FilterParams = {
                 ...prevState,
                 [modifiedParam]: val,
             }
@@ -80,9 +80,9 @@ function App() {
         });
     };
 
-    const handleEnvelopeChange = (modifiedParam: 'attack' | 'release' | 'decay' | 'sustain' , val: number) => {
+    const handleEnvelopeChange = (modifiedParam: 'attack' | 'release' | 'decay' | 'sustain', val: number) => {
         setEnvelopeParams((prevState) => {
-            let newState : EnvelopeParams = {
+            let newState: EnvelopeParams = {
                 ...prevState,
                 [modifiedParam]: Number(val)
             }
@@ -93,7 +93,7 @@ function App() {
 
     const handleEffectChange = (effect: null | 'chorus', modifiedParam: keyof ChorusParams, val: number) => {
         setEffectParams((prevState) => {
-            let newState : EffectParams = {
+            let newState: EffectParams = {
                 activeEffect: effect,
                 effectParams: {
                     ...prevState.effectParams,
@@ -113,7 +113,7 @@ function App() {
     // setup sound engine class
     useEffect(() => {
         const audioContext = new AudioContext();
-        const midiVoices =Array(13).fill(0).map((_, i) => i+60) ;
+        const midiVoices = Array(13).fill(0).map((_, i) => i + 60);
         const voiceParams: VoiceParams = {
             filterParams: filterParams,
             envelopeParams: envelopeParams,
@@ -123,7 +123,7 @@ function App() {
             midiVoices: midiVoices,
             effectParams: effectParams,
             voiceParams: voiceParams,
-            volume: volume/100
+            volume: volume / 100
         })
     }, []);
 
@@ -154,7 +154,8 @@ function App() {
                                 <p>This is a simple subtractive synthesizer created with the Web Audio API.
                                 </p>
                                 <p>
-                                    You can control the synthesizer by clicking or tapping on the virtual keyboard at the bottom of the screen, or by using the keyboard keys 'a' to 'k'.
+                                    You can control the synthesizer by clicking or tapping on the virtual keyboard at
+                                    the bottom of the screen, or by using the keyboard keys 'a' to 'k'.
                                 </p>
                             </div>
                             <h2 className='text-2xl font-bold mb-8'>Acknowledgements</h2>
@@ -163,7 +164,7 @@ function App() {
                                     Oscillator icons created by&nbsp;
                                     <a href="https://www.flaticon.com/authors/iconading" title="wave square icons">
                                         <em className='not-italic text-primary-content hover:underline underline-offset-4'>
-                                             iconading - Flaticon
+                                            iconading - Flaticon
                                         </em>
                                     </a>
                                 </p>

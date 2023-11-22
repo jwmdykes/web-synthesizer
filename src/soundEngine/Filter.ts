@@ -22,8 +22,7 @@ export class Filter {
     private audioContext: AudioContext;
     private parentNode: AudioNode | TunaAudioNode;
 
-    public setParent(node: AudioNode | TunaAudioNode)
-    {
+    public setParent(node: AudioNode | TunaAudioNode) {
         this.parentNode = node;
     }
 
@@ -55,8 +54,7 @@ export class Filter {
         this.node.connect(this.parentNode)
     }
 
-    public changeFilterParams(filterParams: FilterParams)
-    {
+    public changeFilterParams(filterParams: FilterParams) {
         this.type = filterParams.type;
         this.Q = filterParams.Q;
         this.frequency = filterParams.frequency;
