@@ -160,12 +160,20 @@ function App() {
                             <h2 className='text-2xl font-bold mb-8'>Acknowledgements</h2>
                             <div className='flex flex-col gap-5'>
                                 <p>
-                                    Oscillator icons are created by{' '}
-                                    <a href='https://www.flaticon.com/authors/iconading'>
+                                    Oscillator icons created by&nbsp;
+                                    <a href="https://www.flaticon.com/authors/iconading" title="wave square icons">
                                         <em className='not-italic text-primary-content hover:underline underline-offset-4'>
-                                            iconading
+                                             iconading - Flaticon
                                         </em>
-                                    </a>{' '}
+                                    </a>
+                                </p>
+                                <p>
+                                    Grand piano favicon created by&nbsp;
+                                    <a href="https://www.flaticon.com/free-icons/grand-piano" title="grand piano icons">
+                                        <em className='not-italic text-primary-content hover:underline underline-offset-4'>
+                                            Andrejs Kirma - Flaticon
+                                        </em>
+                                    </a>
                                 </p>
                             </div>
 
