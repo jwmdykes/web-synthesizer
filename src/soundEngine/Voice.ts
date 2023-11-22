@@ -82,14 +82,20 @@ export class Voice {
             this.oscillator = newOscillator.oscillator;
             this.crossfadeGain = newOscillator.crossfadeGain;
 
-            this.crossfadeGain.gain.exponentialRampToValueAtTime(Voice.maxVolume, this.audioContext.currentTime + crossfadeTime);
+            // first do a linear ramp to a very small value, or else firefox gives an error.
+            this.crossfadeGain.gain.linearRampToValueAtTime(0.00001, this.audioContext.currentTime + 0.00001)
+            this.crossfadeGain.gain.exponentialRampToValueAtTime(Voice.maxVolume, this.audioContext.currentTime + crossfadeTime + 0.00001);
         } else {
             this.crossfadeGain?.gain.cancelScheduledValues(this.audioContext.currentTime)
             this.crossfadeGain?.gain.setValueAtTime(this.crossfadeGain?.gain.value, this.audioContext.currentTime
             );
-            this.crossfadeGain?.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + crossfadeTime);
+            if (this.crossfadeGain != null && this.crossfadeGain?.gain.value > 0) {
+                this.crossfadeGain?.gain.exponentialRampToValueAtTime(0.0001, this.audioContext.currentTime + crossfadeTime);
+            }
 
-            newOscillator.crossfadeGain?.gain.exponentialRampToValueAtTime(Voice.maxVolume, this.audioContext.currentTime + crossfadeTime);
+            // first do a linear ramp to a very small value, or else firefox gives an error.
+            newOscillator.crossfadeGain.gain.linearRampToValueAtTime(0.00001, this.audioContext.currentTime + 0.00001)
+            newOscillator.crossfadeGain.gain.exponentialRampToValueAtTime(Voice.maxVolume, this.audioContext.currentTime + crossfadeTime + 0.00001);
             this.oscillator.stop(this.audioContext.currentTime + crossfadeTime);
 
             this.oscillator = newOscillator.oscillator;

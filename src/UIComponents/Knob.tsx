@@ -182,7 +182,6 @@ const Knob: React.FC<KnobProps> = ({
     // Add event listeners when dragging starts and remove them when it ends
     useEffect(() => {
         const handleMouseMove = (e: MouseEvent) => {
-            console.log("GOING")
             e.preventDefault()
             e.stopPropagation()
             onDrag(e);
