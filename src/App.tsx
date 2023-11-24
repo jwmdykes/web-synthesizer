@@ -280,7 +280,7 @@ function App() {
                                     minVal={0.01}
                                     maxVal={1}
                                     step={0.01}
-                                    sensitivity={0.25}
+                                    sensitivity={0.5}
                                     onChange={(val) => handleEnvelopeChange('attack', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
@@ -289,7 +289,7 @@ function App() {
                                     minVal={0.01}
                                     maxVal={1}
                                     step={0.01}
-                                    sensitivity={0.25}
+                                    sensitivity={0.5}
                                     onChange={(val) => handleEnvelopeChange('decay', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
@@ -298,7 +298,7 @@ function App() {
                                     minVal={0.01}
                                     maxVal={1}
                                     step={0.01}
-                                    sensitivity={0.25}
+                                    sensitivity={0.5}
                                     onChange={(val) => handleEnvelopeChange('sustain', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
@@ -307,7 +307,7 @@ function App() {
                                     minVal={0.01}
                                     maxVal={4}
                                     step={0.01}
-                                    sensitivity={0.25}
+                                    sensitivity={0.5}
                                     onChange={(val) => handleEnvelopeChange('release', val)}
                                 ></SingleKnobControl>
                             </KnobContainer>
@@ -365,17 +365,26 @@ function App() {
                                 <SingleKnobControl
                                     text='Rate'
                                     defaultVal={defaultParams.chorusEffectParams.effectParams.rate}
-                                    minVal={0.1}
-                                    maxVal={6}
-                                    step={0.1}
+                                    minVal={0.01}
+                                    maxVal={8}
+                                    step={0.01}
                                     sensitivity={0.5}
                                     onChange={(val) => handleChorusEffectChange(chorusEffectParams.activeEffect, 'rate', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
+                                    text='Depth'
+                                    defaultVal={defaultParams.chorusEffectParams.effectParams.depth}
+                                    minVal={0}
+                                    maxVal={1}
+                                    step={0.01}
+                                    sensitivity={0.5}
+                                    onChange={(val) => handleChorusEffectChange(chorusEffectParams.activeEffect, 'depth', val)}
+                                ></SingleKnobControl>
+                                <SingleKnobControl
                                     text='Delay'
                                     defaultVal={defaultParams.chorusEffectParams.effectParams.delay}
-                                    minVal={0.1}
-                                    maxVal={2}
+                                    minVal={0}
+                                    maxVal={1}
                                     step={0.01}
                                     sensitivity={0.5}
                                     onChange={(val) => handleChorusEffectChange(chorusEffectParams.activeEffect, 'delay', val)}
@@ -386,7 +395,7 @@ function App() {
                                     minVal={0}
                                     maxVal={0.99}
                                     step={0.01}
-                                    sensitivity={1}
+                                    sensitivity={0.5}
                                     onChange={(val) => handleChorusEffectChange(chorusEffectParams.activeEffect, 'feedback', val)}
                                 ></SingleKnobControl>
                             </KnobContainer>

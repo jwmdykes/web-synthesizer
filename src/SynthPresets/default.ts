@@ -8,9 +8,9 @@ import {
 } from "../soundEngine/TunaEffect";
 
 const envelopeParams: EnvelopeParams = {
-    attack: 0.5,
-    decay: 0.8,
-    sustain: 1,
+    attack: 0.1,
+    decay: 0.5,
+    sustain: 0.8,
     release: 2,
 }
 
@@ -24,10 +24,11 @@ const filterParams: FilterParams = {
 }
 
 const chorusParams: ChorusParams = {
-    rate: 1.5,
-    feedback: 0.8,
-    delay: 0.05,
-    bypass: false,
+    rate: 1.5,         //0.01 to 8+
+    feedback: 0.4,     //0 to 1+
+    depth: 0.7,        //0 to 1
+    delay: 0.0045,     //0 to 1
+    bypass: false      //true or false
 }
 
 const pingPongParams: PingPongDelayProperties = {

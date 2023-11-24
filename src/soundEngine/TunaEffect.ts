@@ -56,6 +56,7 @@ export class PingPongEffect {
 
 
 export interface ChorusParams {
+    depth: number,
     rate: number,
     feedback: number,
     delay: number,
