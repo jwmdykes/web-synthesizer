@@ -11,7 +11,7 @@ const envelopeParams: EnvelopeParams = {
 
 const filterParams: FilterParams = {
     type: 'lowpass',
-    frequency: 350,
+    frequency: 100,
     Q: 1,
     LFOFrequency: 1,
     LFOBypass: false,
@@ -22,7 +22,7 @@ const delayParams: ChorusParams = {
     rate: 1.5,
     feedback: 0.8,
     delay: 0.05,
-    bypass: false
+    bypass: false,
 }
 
 const oscillatorParams: OscillatorType = "sine"
