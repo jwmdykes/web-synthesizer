@@ -315,7 +315,7 @@ function App() {
                                     text='Release'
                                     defaultVal={defaultParams.envelopeParams.release}
                                     minVal={0.01}
-                                    maxVal={1}
+                                    maxVal={4}
                                     step={0.01}
                                     sensitivity={0.25}
                                     onChange={(val) => handleEnvelopeChange('release', val)}
@@ -366,34 +366,39 @@ function App() {
                         </ControlBox>
 
                         <ControlBox>
-                            <ControlBoxHeader text='Chorus'></ControlBoxHeader>
+                            <ControlBoxHeader text='Chorus'>
+                                <input type="checkbox" className="toggle toggle-success"
+                                       checked={effectParams.activeEffect != null} onChange={() =>
+                                    handleEffectChange(effectParams.activeEffect == null ? 'chorus' : null, 'rate', effectParams.effectParams.rate)}/>
+                            </ControlBoxHeader>
                             <KnobContainer>
+
                                 <SingleKnobControl
                                     text='Rate'
                                     defaultVal={defaultParams.effectParams.effectParams.rate}
                                     minVal={0.1}
-                                    maxVal={20}
+                                    maxVal={6}
                                     step={0.1}
                                     sensitivity={0.5}
-                                    onChange={(val) => handleEffectChange('chorus', 'rate', val)}
+                                    onChange={(val) => handleEffectChange(effectParams.activeEffect, 'rate', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Delay'
                                     defaultVal={defaultParams.effectParams.effectParams.delay}
                                     minVal={0.1}
-                                    maxVal={10}
-                                    step={0.1}
+                                    maxVal={2}
+                                    step={0.01}
                                     sensitivity={0.5}
-                                    onChange={(val) => handleEffectChange('chorus', 'delay', val)}
+                                    onChange={(val) => handleEffectChange(effectParams.activeEffect, 'delay', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Feedback'
                                     defaultVal={defaultParams.effectParams.effectParams.feedback}
                                     minVal={0}
-                                    maxVal={1}
+                                    maxVal={0.99}
                                     step={0.01}
                                     sensitivity={1}
-                                    onChange={(val) => handleEffectChange('chorus', 'feedback', val)}
+                                    onChange={(val) => handleEffectChange(effectParams.activeEffect, 'feedback', val)}
                                 ></SingleKnobControl>
                             </KnobContainer>
                         </ControlBox>
