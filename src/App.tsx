@@ -45,15 +45,6 @@ function App() {
     const [oscillatorType, setOscillatorType] = useState<OscillatorType>(defaultParams.oscillatorParams);
     const [chorusEffectParams, setChorusEffectParams] = useState<ChorusEffectParams>(defaultParams.chorusEffectParams);
     const [pingPongEffectParams, setPingPongEffectParams] = useState<PingPongEffectParams>(defaultParams.pingPongEffectParams);
-    const [showFirefoxWarningPopup, setShowFirefoxWarningPopup] = useState(false);
-
-    useEffect(() => {
-        let sUsrAg = navigator.userAgent;
-        // detect if browser is firefox.
-        if (sUsrAg.indexOf("Firefox") > -1) {
-            setShowFirefoxWarningPopup(true);
-        }
-    }, []);
 
     const pressedKeys: MutableRefObject<Map<string, boolean>> = useRef(new Map());
 
@@ -186,6 +177,13 @@ function App() {
                                     You can control the synthesizer by clicking or tapping on the virtual keyboard at
                                     the bottom of the screen, or by using the keyboard keys 'a' to 'k'.
                                 </p>
+                                <p>The source code can be found on&nbsp;
+                                    <a href="https://github.com/jwmdykes/web-synthesizer" title="github source code">
+                                        <em className='not-italic text-primary-content hover:underline underline-offset-4'>
+                                            github.
+                                        </em>
+                                    </a>
+                                </p>
                             </div>
                             <h2 className='text-2xl font-bold mb-8'>Acknowledgements</h2>
                             <div className='flex flex-col gap-5'>
@@ -209,35 +207,6 @@ function App() {
 
                             <div className='flex justify-end mt-8'>
                                 <button className='btn btn-primary' onClick={toggleModalVisible}>
-                                    Close
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {showFirefoxWarningPopup && (
-                <div
-                    className='fixed inset-0 bg-black bg-opacity-50 z-40 flex justify-center items-center p-4'
-                    onClick={() => setShowFirefoxWarningPopup(false)}>
-                    <div
-                        className='bg-base-100 p-6 rounded-lg shadow-lg w-full max-w-md z-50 overflow-auto'
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div>
-                            <h2 className='text-2xl font-bold mb-8'>You seem to be using Firefox</h2>
-                            <div className='flex flex-col gap-5'>
-                                <p>
-                                    This app works best on Chromium based browsers (Chrome, Edge, Opera, etc.) or Safari
-                                    due to missing support in Firefox for the Web Audio API.
-                                </p>
-                                <p>You may continue to use the app in Firefox, but some features may not work as
-                                    intended.</p>
-                            </div>
-
-                            <div className='flex justify-end mt-8'>
-                                <button className='btn btn-primary' onClick={() => setShowFirefoxWarningPopup(false)}>
                                     Close
                                 </button>
                             </div>
