@@ -29,7 +29,12 @@ import {VoiceParams} from "./soundEngine/Voice";
 import defaultParams from "./SynthPresets/default"
 import KnobContainer from "./UIComponents/KnobContainer";
 import keyMap from "./SynthPresets/hotkeys";
-import {ChorusParams, EffectParams} from "./soundEngine/TunaEffect";
+import {
+    ChorusEffectParams,
+    ChorusParams,
+    PingPongDelayProperties,
+    PingPongEffectParams
+} from "./soundEngine/TunaEffect";
 
 
 function App() {
@@ -38,7 +43,8 @@ function App() {
     const [envelopeParams, setEnvelopeParams] = useState<EnvelopeParams>(defaultParams.envelopeParams);
     const [filterParams, setFilterParams] = useState<FilterParams>(defaultParams.filterParams);
     const [oscillatorType, setOscillatorType] = useState<OscillatorType>(defaultParams.oscillatorParams);
-    const [effectParams, setEffectParams] = useState<EffectParams>(defaultParams.effectParams);
+    const [chorusEffectParams, setChorusEffectParams] = useState<ChorusEffectParams>(defaultParams.chorusEffectParams);
+    const [pingPongEffectParams, setPingPongEffectParams] = useState<PingPongEffectParams>(defaultParams.pingPongEffectParams);
     const [showFirefoxWarningPopup, setShowFirefoxWarningPopup] = useState(false);
 
     useEffect(() => {
@@ -99,16 +105,30 @@ function App() {
         });
     }
 
-    const handleEffectChange = (effect: null | 'chorus', modifiedParam: keyof ChorusParams, val: number) => {
-        setEffectParams((prevState) => {
-            let newState: EffectParams = {
+    const handleChorusEffectChange = (effect: null | 'chorus', modifiedParam: keyof ChorusParams, val: number) => {
+        setChorusEffectParams((prevState) => {
+            let newState: ChorusEffectParams = {
                 activeEffect: effect,
                 effectParams: {
                     ...prevState.effectParams,
                     [modifiedParam]: val,
                 }
             }
-            soundEngine.current?.changeEffectParams(newState);
+            soundEngine.current?.changeChorusEffectParams(newState);
+            return newState
+        });
+    }
+
+    const handlePingPongEffectChange = (effect: null | 'ping-pong', modifiedParam: keyof PingPongDelayProperties, val: number) => {
+        setPingPongEffectParams((prevState) => {
+            let newState: PingPongEffectParams = {
+                activeEffect: effect,
+                effectParams: {
+                    ...prevState.effectParams,
+                    [modifiedParam]: val,
+                }
+            }
+            soundEngine.current?.changePingPongEffectParams(newState);
             return newState
         });
     }
@@ -129,7 +149,8 @@ function App() {
         }
         soundEngine.current = new SoundEngine(audioContext, {
             midiVoices: midiVoices,
-            effectParams: effectParams,
+            chorusEffectParams: chorusEffectParams,
+            pingPongEffectParams: pingPongEffectParams,
             voiceParams: voiceParams,
             volume: volume / 100
         })
@@ -368,44 +389,86 @@ function App() {
                         <ControlBox>
                             <ControlBoxHeader text='Chorus'>
                                 <input type="checkbox" className="toggle toggle-success"
-                                       checked={effectParams.activeEffect != null} onChange={() =>
-                                    handleEffectChange(effectParams.activeEffect == null ? 'chorus' : null, 'rate', effectParams.effectParams.rate)}/>
+                                       checked={chorusEffectParams.activeEffect != null} onChange={() =>
+                                    handleChorusEffectChange(chorusEffectParams.activeEffect == null ? 'chorus' : null, 'rate', chorusEffectParams.effectParams.rate)}/>
                             </ControlBoxHeader>
                             <KnobContainer>
-
                                 <SingleKnobControl
                                     text='Rate'
-                                    defaultVal={defaultParams.effectParams.effectParams.rate}
+                                    defaultVal={defaultParams.chorusEffectParams.effectParams.rate}
                                     minVal={0.1}
                                     maxVal={6}
                                     step={0.1}
                                     sensitivity={0.5}
-                                    onChange={(val) => handleEffectChange(effectParams.activeEffect, 'rate', val)}
+                                    onChange={(val) => handleChorusEffectChange(chorusEffectParams.activeEffect, 'rate', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Delay'
-                                    defaultVal={defaultParams.effectParams.effectParams.delay}
+                                    defaultVal={defaultParams.chorusEffectParams.effectParams.delay}
                                     minVal={0.1}
                                     maxVal={2}
                                     step={0.01}
                                     sensitivity={0.5}
-                                    onChange={(val) => handleEffectChange(effectParams.activeEffect, 'delay', val)}
+                                    onChange={(val) => handleChorusEffectChange(chorusEffectParams.activeEffect, 'delay', val)}
                                 ></SingleKnobControl>
                                 <SingleKnobControl
                                     text='Feedback'
-                                    defaultVal={defaultParams.effectParams.effectParams.feedback}
+                                    defaultVal={defaultParams.chorusEffectParams.effectParams.feedback}
                                     minVal={0}
                                     maxVal={0.99}
                                     step={0.01}
                                     sensitivity={1}
-                                    onChange={(val) => handleEffectChange(effectParams.activeEffect, 'feedback', val)}
+                                    onChange={(val) => handleChorusEffectChange(chorusEffectParams.activeEffect, 'feedback', val)}
                                 ></SingleKnobControl>
                             </KnobContainer>
                         </ControlBox>
 
                         <ControlBox>
-                            <ControlBoxHeader text='LFO'></ControlBoxHeader>
+                            <ControlBoxHeader text='Ping Pong Delay'>
+                                <input type="checkbox" className="toggle toggle-success"
+                                       checked={pingPongEffectParams.activeEffect != null} onChange={() =>
+                                    handlePingPongEffectChange(pingPongEffectParams.activeEffect == null ? 'ping-pong' : null, 'feedback', chorusEffectParams.effectParams.feedback)}/>
+                            </ControlBoxHeader>
+                            <KnobContainer>
+                                <SingleKnobControl
+                                    text='Left Delay'
+                                    defaultVal={defaultParams.pingPongEffectParams.effectParams.delayTimeLeft}
+                                    minVal={0}
+                                    maxVal={2}
+                                    step={0.01}
+                                    sensitivity={0.5}
+                                    onChange={(val) => handlePingPongEffectChange(pingPongEffectParams.activeEffect, 'delayTimeLeft', val)}
+                                ></SingleKnobControl>
+                                <SingleKnobControl
+                                    text='Right Delay'
+                                    defaultVal={defaultParams.pingPongEffectParams.effectParams.delayTimeRight}
+                                    minVal={0}
+                                    maxVal={2}
+                                    step={0.01}
+                                    sensitivity={0.5}
+                                    onChange={(val) => handlePingPongEffectChange(pingPongEffectParams.activeEffect, 'delayTimeRight', val)}
+                                ></SingleKnobControl>
+                                <SingleKnobControl
+                                    text='Wet Level'
+                                    defaultVal={defaultParams.pingPongEffectParams.effectParams.wetLevel}
+                                    minVal={0}
+                                    maxVal={0.99}
+                                    step={0.01}
+                                    sensitivity={0.5}
+                                    onChange={(val) => handlePingPongEffectChange(pingPongEffectParams.activeEffect, 'wetLevel', val)}
+                                ></SingleKnobControl>
+                                <SingleKnobControl
+                                    text='Feedback'
+                                    defaultVal={defaultParams.pingPongEffectParams.effectParams.feedback}
+                                    minVal={0}
+                                    maxVal={0.99}
+                                    step={0.01}
+                                    sensitivity={0.5}
+                                    onChange={(val) => handlePingPongEffectChange(pingPongEffectParams.activeEffect, 'feedback', val)}
+                                ></SingleKnobControl>
+                            </KnobContainer>
                         </ControlBox>
+
                     </div>
                 </div>
                 <div

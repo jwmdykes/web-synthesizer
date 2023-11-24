@@ -1,11 +1,12 @@
 import {Voice, VoiceParams} from "./Voice";
 import {EnvelopeParams} from "./Envelope";
 import {FilterParams} from "./Filter";
-import {EffectParams, TunaEffect} from "./TunaEffect";
+import {ChorusEffect, ChorusEffectParams, PingPongEffect, PingPongEffectParams} from "./TunaEffect";
 
 export interface SoundEngineParams {
     midiVoices: number[],
-    effectParams: EffectParams,
+    chorusEffectParams: ChorusEffectParams,
+    pingPongEffectParams: PingPongEffectParams,
     voiceParams: VoiceParams,
     volume: number,
 }
@@ -15,7 +16,9 @@ export class SoundEngine {
     private readonly audioContext: AudioContext;
     private readonly masterVolume: GainNode;
     private readonly mixCompressor: DynamicsCompressorNode;
-    private effect: TunaEffect
+    private readonly effectBus: GainNode;
+    private chorusEffect: ChorusEffect;
+    private pingPongEffect: PingPongEffect;
 
     public setVolume(volume: number) {
         this.masterVolume.gain.setValueAtTime(volume, this.audioContext.currentTime);
@@ -33,12 +36,14 @@ export class SoundEngine {
         }
     }
 
-    public changeEffectParams(effectParams: EffectParams) {
-        this.effect.changeEffectParams(effectParams);
+    public changeChorusEffectParams(effectParams: ChorusEffectParams) {
+        this.chorusEffect.changeEffectParams(effectParams);
+        this.effectBus.connect(this.chorusEffect.node);
+    }
 
-        for (let [_, val] of this.voices) {
-            val.connect(this.effect.node);
-        }
+    public changePingPongEffectParams(effectParams: PingPongEffectParams) {
+        this.pingPongEffect.changeEffectParams(effectParams);
+        this.effectBus.connect(this.pingPongEffect.node)
     }
 
     public changeFilterParams(filterParams: FilterParams) {
@@ -55,8 +60,13 @@ export class SoundEngine {
         this.mixCompressor.release.setValueAtTime(0.25, audioContext.currentTime)
 
         this.masterVolume = audioContext.createGain();
+        this.effectBus = audioContext.createGain();
+        this.effectBus.gain.value = 0.25;
 
-        this.effect = new TunaEffect(audioContext, this.mixCompressor, params.effectParams);
+        this.chorusEffect = new ChorusEffect(audioContext, this.mixCompressor, params.chorusEffectParams);
+        this.effectBus.connect(this.chorusEffect.node);
+        this.pingPongEffect = new PingPongEffect(audioContext, this.mixCompressor, params.pingPongEffectParams);
+        this.effectBus.connect(this.pingPongEffect.node)
 
         this.mixCompressor.connect(this.masterVolume);
         this.masterVolume.connect(audioContext.destination);
@@ -66,7 +76,7 @@ export class SoundEngine {
 
         this.voices = new Map<number, Voice>();
         for (let i of params.midiVoices) {
-            this.voices.set(i, new Voice(this.audioContext, this.effect.node, params.voiceParams));
+            this.voices.set(i, new Voice(this.audioContext, this.effectBus, params.voiceParams));
         }
     }
 
