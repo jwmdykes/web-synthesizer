@@ -207,7 +207,7 @@ const Knob: React.FC<KnobProps> = ({
         <div className='flex flex-col items-start'>
             <div className='flex flex-col items-center'>
                 <div
-                    className='relative w-16 h-16'
+                    className='relative w-16 h-16 touch-none'
                     onPointerDown={startDrag}
                     onDoubleClick={resetValues}
                 >
