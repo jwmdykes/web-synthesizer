@@ -35,9 +35,6 @@ export class Filter {
         LFOOscillation,
         LFOFrequency
     }: FilterParams) {
-        console.log(`Oscillation: ${LFOOscillation}`)
-        console.log(`Frequency: ${LFOFrequency}`)
-
         this.parentNode = parentNode;
         this.audioContext = audioContext
 
@@ -68,9 +65,6 @@ export class Filter {
     }
 
     public changeFilterParams(filterParams: FilterParams) {
-        console.log("CHANGING FILTER PARAMS");
-        console.log(filterParams);
-
         this.type = filterParams.type;
         this.Q = filterParams.Q;
         this.frequency = filterParams.frequency;

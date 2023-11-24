@@ -22,7 +22,6 @@ export class PingPongEffect {
     public changeEffectParams(effectParams: PingPongEffectParams) {
         this.node.disconnect(this.parent)
 
-        console.log(effectParams.activeEffect)
         switch (effectParams.activeEffect) {
             case "ping-pong":
                 this.node = new this.tuna.PingPongDelay(effectParams.effectParams)
