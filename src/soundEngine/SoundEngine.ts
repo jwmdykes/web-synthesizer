@@ -26,7 +26,6 @@ export class SoundEngine {
   private pingPongEffect: PingPongEffect;
 
   public setVolume(volume: number) {
-    console.log("setting volume:", volume);
     this.masterVolume.gain.setValueAtTime(
       volume,
       this.audioContext.currentTime
@@ -34,14 +33,12 @@ export class SoundEngine {
   }
 
   public changeOscillatorParams(oscillatorParams: OscillatorType) {
-    console.log("changing oscillator:", oscillatorParams);
     for (let value of this.voices.values()) {
       value.changeOscillatorParams(oscillatorParams);
     }
   }
 
   public changeEnvelopeParams(envelopeParams: EnvelopeParams) {
-    console.log("changing envelope:", envelopeParams);
     for (let value of this.voices.values()) {
       value.changeEnvelopeParams(envelopeParams);
     }
