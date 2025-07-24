@@ -8,8 +8,7 @@ import { ReactComponent as DialBackground } from "../assets/dialbackground.svg";
 import { ReactComponent as DialForeground } from "../assets/dialforeground.svg";
 
 function round(value: number, step: number) {
-  step || (step = 1.0);
-  let inv = 1.0 / step;
+  const inv = 1.0 / step;
   return Math.round(value * inv) / inv;
 }
 

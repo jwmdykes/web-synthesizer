@@ -33,13 +33,13 @@ export class SoundEngine {
   }
 
   public changeOscillatorParams(oscillatorParams: OscillatorType) {
-    for (let value of this.voices.values()) {
+    for (const value of this.voices.values()) {
       value.changeOscillatorParams(oscillatorParams);
     }
   }
 
   public changeEnvelopeParams(envelopeParams: EnvelopeParams) {
-    for (let value of this.voices.values()) {
+    for (const value of this.voices.values()) {
       value.changeEnvelopeParams(envelopeParams);
     }
   }
@@ -55,7 +55,7 @@ export class SoundEngine {
   }
 
   public changeFilterParams(filterParams: FilterParams) {
-    for (let value of this.voices.values()) {
+    for (const value of this.voices.values()) {
       value.changeFilterParams(filterParams);
     }
   }
@@ -90,7 +90,7 @@ export class SoundEngine {
     this.audioContext = audioContext;
 
     this.voices = new Map<number, Voice>();
-    for (let i of params.midiVoices) {
+    for (const i of params.midiVoices) {
       this.voices.set(
         i,
         new Voice(this.audioContext, this.effectBus, params.voiceParams)
@@ -99,14 +99,14 @@ export class SoundEngine {
   }
 
   public play(noteNumber: number) {
-    let voice = this.voices.get(noteNumber);
+    const voice = this.voices.get(noteNumber);
     if (voice) {
       voice.play(noteNumber);
     }
   }
 
   public stop(noteNumber: number) {
-    let voice = this.voices.get(noteNumber);
+    const voice = this.voices.get(noteNumber);
     if (voice) {
       voice.stop();
     }

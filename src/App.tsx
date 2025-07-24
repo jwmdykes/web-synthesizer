@@ -97,7 +97,7 @@ function App() {
     val: number
   ) => {
     setFilterParams((prevState) => {
-      let newState: FilterParams = {
+      const newState: FilterParams = {
         ...prevState,
         [modifiedParam]: val,
       };
@@ -111,7 +111,7 @@ function App() {
     val: number
   ) => {
     setEnvelopeParams((prevState) => {
-      let newState: EnvelopeParams = {
+      const newState: EnvelopeParams = {
         ...prevState,
         [modifiedParam]: Number(val),
       };
@@ -126,7 +126,7 @@ function App() {
     val: number
   ) => {
     setChorusEffectParams((prevState) => {
-      let newState: ChorusEffectParams = {
+      const newState: ChorusEffectParams = {
         activeEffect: effect,
         effectParams: {
           ...prevState.effectParams,
@@ -144,7 +144,7 @@ function App() {
     val: number
   ) => {
     setPingPongEffectParams((prevState) => {
-      let newState: PingPongEffectParams = {
+      const newState: PingPongEffectParams = {
         activeEffect: effect,
         effectParams: {
           ...prevState.effectParams,
@@ -218,7 +218,7 @@ function App() {
                 <p>
                   You can control the synthesizer by clicking or tapping on the
                   virtual keyboard at the bottom of the screen, or by using the
-                  keyboard keys 'a' to 'k'.
+                  keyboard keys &apos;a&apos; to &apos;k&apos;.
                 </p>
                 <p>
                   The source code can be found on&nbsp;
