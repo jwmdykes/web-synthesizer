@@ -1,4 +1,4 @@
-import { MouseEventHandler, ReactNode } from 'react';
+import { MouseEventHandler, ReactNode } from "react";
 
 function WhiteKey(props: {
   letter: string;
@@ -46,16 +46,16 @@ export default function Piano(props: {
   mouseDownCallbackCreator: (note: number) => MouseEventHandler;
   mouseUpCallbackCreator: (note: number) => MouseEventHandler;
 }) {
-  const whiteKeys: Array<string> = ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'C2'];
+  const whiteKeys: Array<string> = ["C", "D", "E", "F", "G", "A", "B", "C2"];
   const whiteKeyMidiNumbers: Map<string, number> = new Map([
-    ['C', 60],
-    ['D', 62],
-    ['E', 64],
-    ['F', 65],
-    ['G', 67],
-    ['A', 69],
-    ['B', 71],
-    ['C2', 72],
+    ["C", 60],
+    ["D", 62],
+    ["E", 64],
+    ["F", 65],
+    ["G", 67],
+    ["A", 69],
+    ["B", 71],
+    ["C2", 72],
   ]);
 
   return (
@@ -66,29 +66,27 @@ export default function Piano(props: {
             const midiNumber: number = whiteKeyMidiNumbers.get(key) ?? 0;
 
             return (
-              <>
-                <WhiteKey
-                  letter={key}
-                  key={key}
-                  mouseDownCallback={props.mouseDownCallbackCreator(midiNumber)}
-                  mouseUpCallback={props.mouseUpCallbackCreator(midiNumber)}
-                >
-                  {key !== 'B' &&
-                  key !== 'E' &&
-                  index !== whiteKeys.length - 1 ? (
-                    <BlackKey
-                      key={key + '♯'}
-                      letter={key + '♯'}
-                      mouseDownCallback={props.mouseDownCallbackCreator(
-                        midiNumber + 1
-                      )}
-                      mouseUpCallback={props.mouseUpCallbackCreator(
-                        midiNumber + 1
-                      )}
-                    />
-                  ) : null}
-                </WhiteKey>
-              </>
+              <WhiteKey
+                letter={key}
+                key={key}
+                mouseDownCallback={props.mouseDownCallbackCreator(midiNumber)}
+                mouseUpCallback={props.mouseUpCallbackCreator(midiNumber)}
+              >
+                {key !== "B" &&
+                key !== "E" &&
+                index !== whiteKeys.length - 1 ? (
+                  <BlackKey
+                    key={key + "♯"}
+                    letter={key + "♯"}
+                    mouseDownCallback={props.mouseDownCallbackCreator(
+                      midiNumber + 1
+                    )}
+                    mouseUpCallback={props.mouseUpCallbackCreator(
+                      midiNumber + 1
+                    )}
+                  />
+                ) : null}
+              </WhiteKey>
             );
           })}
         </div>

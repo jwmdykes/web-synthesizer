@@ -4,38 +4,38 @@ import React, {
   useState,
   MouseEventHandler,
   MutableRefObject,
-} from 'react';
+} from "react";
 
-import { useHotkeys } from 'react-hotkeys-hook';
+import { useHotkeys } from "react-hotkeys-hook";
 
-import Piano from './UIComponents/Piano';
-import ControlBoxHeader from './UIComponents/ControlBoxHeader';
-import OscillatorButton from './UIComponents/OscillatorButton';
+import Piano from "./UIComponents/Piano";
+import ControlBoxHeader from "./UIComponents/ControlBoxHeader";
+import OscillatorButton from "./UIComponents/OscillatorButton";
 
-import { FilterParams } from './soundEngine/Filter';
+import { FilterParams } from "./soundEngine/Filter";
 
-import SingleKnobControl from './UIComponents/SingleKnobControl';
-import ControlBox from './UIComponents/ControlBox';
+import SingleKnobControl from "./UIComponents/SingleKnobControl";
+import ControlBox from "./UIComponents/ControlBox";
 
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faQuestion } from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faQuestion } from "@fortawesome/free-solid-svg-icons";
 
-import sineWave from './assets/wave-sine.png';
-import squareWave from './assets/wave-square.png';
-import triangleWave from './assets/wave-triangle.png';
-import { EnvelopeParams } from './soundEngine/Envelope';
-import { SoundEngine } from './soundEngine/SoundEngine';
-import { VoiceParams } from './soundEngine/Voice';
+import sineWave from "./assets/wave-sine.png";
+import squareWave from "./assets/wave-square.png";
+import triangleWave from "./assets/wave-triangle.png";
+import { EnvelopeParams } from "./soundEngine/Envelope";
+import { SoundEngine } from "./soundEngine/SoundEngine";
+import { VoiceParams } from "./soundEngine/Voice";
 
-import defaultParams from './SynthPresets/default';
-import KnobContainer from './UIComponents/KnobContainer';
-import keyMap from './SynthPresets/hotkeys';
+import defaultParams from "./SynthPresets/default";
+import KnobContainer from "./UIComponents/KnobContainer";
+import keyMap from "./SynthPresets/hotkeys";
 import {
   ChorusEffectParams,
   ChorusParams,
   PingPongDelayProperties,
   PingPongEffectParams,
-} from './soundEngine/TunaEffect';
+} from "./soundEngine/TunaEffect";
 
 function App() {
   const soundEngine: MutableRefObject<SoundEngine | null> = useRef(null);
@@ -86,19 +86,14 @@ function App() {
     []
   );
 
-  const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setVolume(Number(event.target.value));
-    soundEngine.current?.setVolume(Number(event.target.value) / 100);
-  };
-
   const handleFilterChange = (
     modifiedParam:
-      | 'LFOFrequency'
-      | 'LFOOscillation'
-      | 'LFOBypass'
-      | 'frequency'
-      | 'Q'
-      | 'type',
+      | "LFOFrequency"
+      | "LFOOscillation"
+      | "LFOBypass"
+      | "frequency"
+      | "Q"
+      | "type",
     val: number
   ) => {
     setFilterParams((prevState) => {
@@ -112,7 +107,7 @@ function App() {
   };
 
   const handleEnvelopeChange = (
-    modifiedParam: 'attack' | 'release' | 'decay' | 'sustain',
+    modifiedParam: "attack" | "release" | "decay" | "sustain",
     val: number
   ) => {
     setEnvelopeParams((prevState) => {
@@ -126,7 +121,7 @@ function App() {
   };
 
   const handleChorusEffectChange = (
-    effect: null | 'chorus',
+    effect: null | "chorus",
     modifiedParam: keyof ChorusParams,
     val: number
   ) => {
@@ -144,7 +139,7 @@ function App() {
   };
 
   const handlePingPongEffectChange = (
-    effect: null | 'ping-pong',
+    effect: null | "ping-pong",
     modifiedParam: keyof PingPongDelayProperties,
     val: number
   ) => {
@@ -184,14 +179,7 @@ function App() {
       voiceParams: voiceParams,
       volume: volume / 100,
     });
-  }, [
-    chorusEffectParams,
-    envelopeParams,
-    filterParams,
-    oscillatorType,
-    pingPongEffectParams,
-    volume,
-  ]);
+  }, []);
 
   const pianoHeight = 180;
 
@@ -200,6 +188,12 @@ function App() {
     setModalVisibility((prevVisibility) => {
       return !prevVisibility;
     });
+  };
+
+  const handleVolumeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const newVolume = Number(event.target.value);
+    setVolume(newVolume);
+    soundEngine.current?.setVolume(volume / 100);
   };
 
   return (
@@ -303,31 +297,33 @@ function App() {
                 <OscillatorButton
                   text="Sine"
                   src={sineWave}
-                  onChange={() => handleOscillatorTypeChange('sine')}
-                  selected={oscillatorType === 'sine'}
+                  onChange={() => handleOscillatorTypeChange("sine")}
+                  selected={oscillatorType === "sine"}
                 ></OscillatorButton>
                 <OscillatorButton
                   src={squareWave}
                   text="Square"
-                  onChange={() => handleOscillatorTypeChange('square')}
-                  selected={oscillatorType === 'square'}
+                  onChange={() => handleOscillatorTypeChange("square")}
+                  selected={oscillatorType === "square"}
                 ></OscillatorButton>
                 <OscillatorButton
                   text="Triangle"
                   src={triangleWave}
-                  onChange={() => handleOscillatorTypeChange('triangle')}
-                  selected={oscillatorType === 'triangle'}
+                  onChange={() => handleOscillatorTypeChange("triangle")}
+                  selected={oscillatorType === "triangle"}
                 ></OscillatorButton>
               </div>
             </ControlBox>
 
             <ControlBox>
-              <ControlBoxHeader text={`Gain: ${volume}`}></ControlBoxHeader>
+              <ControlBoxHeader
+                text={`Gain: ${volume.toFixed(0)}`}
+              ></ControlBoxHeader>
               <input
                 aria-label="Gain Slider"
                 type="range"
                 min={0}
-                max="100"
+                max={100}
                 value={volume}
                 className="range"
                 onChange={handleVolumeChange}
@@ -344,7 +340,7 @@ function App() {
                   maxVal={1}
                   step={0.01}
                   sensitivity={0.5}
-                  onChange={(val) => handleEnvelopeChange('attack', val)}
+                  onChange={(val) => handleEnvelopeChange("attack", val)}
                 ></SingleKnobControl>
                 <SingleKnobControl
                   text="Decay"
@@ -353,7 +349,7 @@ function App() {
                   maxVal={1}
                   step={0.01}
                   sensitivity={0.5}
-                  onChange={(val) => handleEnvelopeChange('decay', val)}
+                  onChange={(val) => handleEnvelopeChange("decay", val)}
                 ></SingleKnobControl>
                 <SingleKnobControl
                   text="Sustain"
@@ -362,7 +358,7 @@ function App() {
                   maxVal={1}
                   step={0.01}
                   sensitivity={0.5}
-                  onChange={(val) => handleEnvelopeChange('sustain', val)}
+                  onChange={(val) => handleEnvelopeChange("sustain", val)}
                 ></SingleKnobControl>
                 <SingleKnobControl
                   text="Release"
@@ -371,7 +367,7 @@ function App() {
                   maxVal={4}
                   step={0.01}
                   sensitivity={0.5}
-                  onChange={(val) => handleEnvelopeChange('release', val)}
+                  onChange={(val) => handleEnvelopeChange("release", val)}
                 ></SingleKnobControl>
               </KnobContainer>
             </ControlBox>
@@ -386,7 +382,7 @@ function App() {
                   maxVal={2000}
                   step={5}
                   sensitivity={0.5}
-                  onChange={(val) => handleFilterChange('frequency', val)}
+                  onChange={(val) => handleFilterChange("frequency", val)}
                 ></SingleKnobControl>
                 <SingleKnobControl
                   text="Resonance"
@@ -395,7 +391,7 @@ function App() {
                   maxVal={10}
                   step={0.1}
                   sensitivity={0.5}
-                  onChange={(val) => handleFilterChange('Q', val)}
+                  onChange={(val) => handleFilterChange("Q", val)}
                 ></SingleKnobControl>
                 <SingleKnobControl
                   text="LFO Freq"
@@ -404,7 +400,7 @@ function App() {
                   maxVal={10}
                   step={0.1}
                   sensitivity={0.5}
-                  onChange={(val) => handleFilterChange('LFOFrequency', val)}
+                  onChange={(val) => handleFilterChange("LFOFrequency", val)}
                 ></SingleKnobControl>
                 <SingleKnobControl
                   text="LFO Range"
@@ -413,7 +409,7 @@ function App() {
                   maxVal={1000}
                   step={0.1}
                   sensitivity={0.5}
-                  onChange={(val) => handleFilterChange('LFOOscillation', val)}
+                  onChange={(val) => handleFilterChange("LFOOscillation", val)}
                 ></SingleKnobControl>
               </KnobContainer>
             </ControlBox>
@@ -427,8 +423,8 @@ function App() {
                   checked={chorusEffectParams.activeEffect != null}
                   onChange={() =>
                     handleChorusEffectChange(
-                      chorusEffectParams.activeEffect == null ? 'chorus' : null,
-                      'rate',
+                      chorusEffectParams.activeEffect == null ? "chorus" : null,
+                      "rate",
                       chorusEffectParams.effectParams.rate
                     )
                   }
@@ -447,7 +443,7 @@ function App() {
                   onChange={(val) =>
                     handleChorusEffectChange(
                       chorusEffectParams.activeEffect,
-                      'rate',
+                      "rate",
                       val
                     )
                   }
@@ -464,7 +460,7 @@ function App() {
                   onChange={(val) =>
                     handleChorusEffectChange(
                       chorusEffectParams.activeEffect,
-                      'depth',
+                      "depth",
                       val
                     )
                   }
@@ -481,7 +477,7 @@ function App() {
                   onChange={(val) =>
                     handleChorusEffectChange(
                       chorusEffectParams.activeEffect,
-                      'delay',
+                      "delay",
                       val
                     )
                   }
@@ -498,7 +494,7 @@ function App() {
                   onChange={(val) =>
                     handleChorusEffectChange(
                       chorusEffectParams.activeEffect,
-                      'feedback',
+                      "feedback",
                       val
                     )
                   }
@@ -516,9 +512,9 @@ function App() {
                   onChange={() =>
                     handlePingPongEffectChange(
                       pingPongEffectParams.activeEffect == null
-                        ? 'ping-pong'
+                        ? "ping-pong"
                         : null,
-                      'feedback',
+                      "feedback",
                       chorusEffectParams.effectParams.feedback
                     )
                   }
@@ -538,7 +534,7 @@ function App() {
                   onChange={(val) =>
                     handlePingPongEffectChange(
                       pingPongEffectParams.activeEffect,
-                      'delayTimeLeft',
+                      "delayTimeLeft",
                       val
                     )
                   }
@@ -556,7 +552,7 @@ function App() {
                   onChange={(val) =>
                     handlePingPongEffectChange(
                       pingPongEffectParams.activeEffect,
-                      'delayTimeRight',
+                      "delayTimeRight",
                       val
                     )
                   }
@@ -573,7 +569,7 @@ function App() {
                   onChange={(val) =>
                     handlePingPongEffectChange(
                       pingPongEffectParams.activeEffect,
-                      'wetLevel',
+                      "wetLevel",
                       val
                     )
                   }
@@ -590,7 +586,7 @@ function App() {
                   onChange={(val) =>
                     handlePingPongEffectChange(
                       pingPongEffectParams.activeEffect,
-                      'feedback',
+                      "feedback",
                       val
                     )
                   }
